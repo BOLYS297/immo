@@ -1,0 +1,588 @@
+{
+  "services": {
+    "title": {
+      "fr": "Solutions",
+      "en": "Solutions"
+    },
+    "meta_title": {
+      "fr": "Services & Solutions — IMMO Digital",
+      "en": "Services & Solutions — IMMO Digital"
+    },
+    "meta_description": {
+      "fr": "IA & automatisation, développement web et mobile, infrastructure et sécurité : des projets d’ingénierie cadrés sur mesure.",
+      "en": "AI & automation, web and mobile development, infrastructure and security: engineering projects scoped to your needs."
+    },
+    "sections": [
+      {
+        "type": "page_header",
+        "settings": {
+          "size": "xl"
+        },
+        "content": {
+          "fr": {
+            "title": "Des solutions d’ingénierie cadrées sur mesure",
+            "intro": "Aucun prix fixe affiché : chaque projet fait l’objet d’un cadrage avec l’un de nos associés, puis d’un devis détaillé."
+          },
+          "en": {
+            "title": "Engineering solutions scoped to your needs",
+            "intro": "No fixed prices: each project is scoped with one of our partners, then quoted in detail."
+          }
+        }
+      },
+      {
+        "type": "service_domains",
+        "settings": {
+          "source": "services"
+        },
+        "content": {
+          "fr": {
+            "title": "Trois domaines d’ingénierie",
+            "deliverables_label": "Livrables",
+            "domains": [
+              {
+                "title": "IA & Automatisation de processus",
+                "benefit": "Automatiser les tâches répétitives, interconnecter vos outils et gagner du temps.",
+                "deliverables": "Workflows n8n complexes\nAgents conversationnels métier (RAG/LLM)\nAutomatisation CRM, facturation et emails",
+                "cta": "Auditer vos flux de travail",
+                "href": "/services?domaine=ia#chiffrage"
+              },
+              {
+                "title": "Développement Web & Mobile (UI/UX inclus)",
+                "benefit": "Créer une application rapide, sécurisée, élégante et sur mesure.",
+                "deliverables": "Design system et maquettes Figma\nApplications Web/PWA en Next.js\nApps mobiles iOS/Android (React Native)\nAPI scalables",
+                "cta": "Concevoir votre application",
+                "href": "/services?domaine=web#chiffrage"
+              },
+              {
+                "title": "Infrastructure, Cloud & Sécurité réseau",
+                "benefit": "Viser zéro interruption, protéger les données sensibles et concevoir pour la haute disponibilité.",
+                "deliverables": "Conteneurisation Docker/K8s\nArchitectures cloud haute disponibilité (objectif de disponibilité défini au contrat)\nAudits de sécurité réseau\nPlans de reprise d’activité (PRA)",
+                "cta": "Sécuriser vos systèmes",
+                "href": "/services?domaine=infra#chiffrage"
+              }
+            ]
+          },
+          "en": {
+            "title": "Three engineering domains",
+            "deliverables_label": "Deliverables",
+            "domains": [
+              {
+                "title": "AI & Process Automation",
+                "benefit": "Automate repetitive tasks, connect your tools and save time.",
+                "deliverables": "Advanced n8n workflows\nBusiness conversational agents (RAG/LLM)\nCRM, invoicing and email automation",
+                "cta": "Audit your workflows",
+                "href": "/services?domaine=ia#chiffrage"
+              },
+              {
+                "title": "Web & Mobile Development (UI/UX included)",
+                "benefit": "Build a fast, secure, elegant, tailor-made application.",
+                "deliverables": "Design system and Figma mockups\nWeb/PWA applications in Next.js\niOS/Android mobile apps (React Native)\nScalable APIs",
+                "cta": "Design your application",
+                "href": "/services?domaine=web#chiffrage"
+              },
+              {
+                "title": "Infrastructure, Cloud & Network Security",
+                "benefit": "Aim for zero interruption, protect sensitive data and design for high availability.",
+                "deliverables": "Docker/K8s containerisation\nHigh-availability cloud architectures (availability target set in the contract)\nNetwork security audits\nDisaster recovery plans (DRP)",
+                "cta": "Secure your systems",
+                "href": "/services?domaine=infra#chiffrage"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "use_cases",
+        "settings": null,
+        "content": {
+          "fr": {
+            "title": "Missions types",
+            "situation_label": "Situation",
+            "solution_label": "Notre approche",
+            "result_label": "Objectif mesuré",
+            "cases": [
+              {
+                "title": "Automatisation d’entreprise",
+                "situation": "Plus de 200 demandes à traiter chaque jour.",
+                "solution": "Workflow n8n couplé à une IA de tri et de réponse.",
+                "result": "Temps de traitement par demande, mesuré avant et après"
+              },
+              {
+                "title": "Refonte web & application PWA",
+                "situation": "Un site lent qui fait fuir les visiteurs.",
+                "solution": "Refonte Next.js et interface soignée.",
+                "result": "Core Web Vitals au vert et taux de conversion suivi"
+              },
+              {
+                "title": "Infrastructure haute disponibilité",
+                "situation": "Des coupures de serveur à répétition.",
+                "solution": "Architecture Docker/K8s et CDN.",
+                "result": "Disponibilité suivie en continu, plan de reprise testé"
+              }
+            ]
+          },
+          "en": {
+            "title": "Typical engagements",
+            "situation_label": "Situation",
+            "solution_label": "Our approach",
+            "result_label": "What we measure",
+            "cases": [
+              {
+                "title": "Business automation",
+                "situation": "Over 200 requests to handle every day.",
+                "solution": "n8n workflow combined with an AI for triage and replies.",
+                "result": "Handling time per request, measured before and after"
+              },
+              {
+                "title": "Web redesign & PWA",
+                "situation": "A slow website driving visitors away.",
+                "solution": "Next.js rebuild and a refined interface.",
+                "result": "Core Web Vitals in the green and conversion rate tracked"
+              },
+              {
+                "title": "High-availability infrastructure",
+                "situation": "Repeated server outages.",
+                "solution": "Docker/K8s architecture and CDN.",
+                "result": "Availability monitored continuously, recovery plan tested"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "methodology",
+        "settings": null,
+        "content": {
+          "fr": {
+            "title": "Notre méthode en 4 étapes",
+            "step_label": "Étape",
+            "steps": [
+              {
+                "title": "Cadrage & Audit",
+                "text": "Analyse stratégique et définition des objectifs techniques."
+              },
+              {
+                "title": "Architecture & UX/UI",
+                "text": "Modélisation des données et maquettage complet de l’interface."
+              },
+              {
+                "title": "Ingénierie & Intégration",
+                "text": "Développement du code (Fullstack / IA) et configuration réseau."
+              },
+              {
+                "title": "Déploiement & Évolution",
+                "text": "Mise en production sécurisée, formation et maintenance continue."
+              }
+            ]
+          },
+          "en": {
+            "title": "Our method in 4 steps",
+            "step_label": "Step",
+            "steps": [
+              {
+                "title": "Scoping & Audit",
+                "text": "Strategic analysis and definition of technical objectives."
+              },
+              {
+                "title": "Architecture & UX/UI",
+                "text": "Data modelling and full interface mockups."
+              },
+              {
+                "title": "Engineering & Integration",
+                "text": "Code development (Fullstack / AI) and network configuration."
+              },
+              {
+                "title": "Deployment & Evolution",
+                "text": "Secure go-live, training and ongoing maintenance."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "quote_form",
+        "settings": {
+          "background": "satin",
+          "spacing": "normal",
+          "default_domain": "ia"
+        },
+        "content": {
+          "fr": {
+            "title": "Demander un chiffrage sur mesure",
+            "intro": "Décrivez votre besoin : un associé expert vous répond pour cadrer le projet."
+          },
+          "en": {
+            "title": "Request a tailored quote",
+            "intro": "Describe your need: an expert partner will get back to you to scope the project."
+          }
+        }
+      }
+    ]
+  },
+  "a-propos": {
+    "title": {
+      "fr": "À propos",
+      "en": "About"
+    },
+    "meta_title": {
+      "fr": "À propos — IMMO Digital",
+      "en": "About — IMMO Digital"
+    },
+    "meta_description": {
+      "fr": "Pourquoi IMMO : bâtir des écosystèmes numériques durables, avec des associés complémentaires réunis sans sous-traitance.",
+      "en": "Why IMMO: building lasting digital ecosystems, with complementary partners working together without subcontracting."
+    },
+    "sections": [
+      {
+        "type": "about_intro",
+        "settings": null,
+        "content": {
+          "fr": {
+            "title": "Bâtir des systèmes numériques qui traversent le temps",
+            "intro": "IMMO signifie immortalité : l’ambition de créer des écosystèmes numériques solides, maintenus et durables, au service de la population et des entreprises.",
+            "items": [
+              {
+                "title": "Immortalité",
+                "text": "Des systèmes pensés pour traverser le temps, pas pour suivre une mode."
+              },
+              {
+                "title": "Pérennité",
+                "text": "Une architecture claire, documentée et maintenue, qui évolue avec votre activité."
+              },
+              {
+                "title": "Durabilité",
+                "text": "Un code optimisé et une infrastructure sobre, qui restent solides à l’usage."
+              }
+            ]
+          },
+          "en": {
+            "title": "Building digital systems that stand the test of time",
+            "intro": "IMMO stands for immortality: the ambition to create solid, maintained and lasting digital ecosystems, serving people and businesses.",
+            "items": [
+              {
+                "title": "Immortality",
+                "text": "Systems designed to stand the test of time, not to follow a trend."
+              },
+              {
+                "title": "Longevity",
+                "text": "A clear, documented, maintained architecture that evolves with your business."
+              },
+              {
+                "title": "Sustainability",
+                "text": "Optimised code and lean infrastructure that stay solid in use."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "quote_panel",
+        "settings": null,
+        "content": {
+          "fr": {
+            "label": "Notre philosophie",
+            "quote": "Une bonne idée prend toute sa valeur lorsqu’elle est correctement pensée, conçue et communiquée.",
+            "text": "Nous ne créons pas simplement du digital : nous construisons des identités, des expériences et des stratégies qui donnent aux marques les moyens de se démarquer et d’évoluer. Notre mission : transformer les idées en expériences digitales cohérentes, créatives et performantes."
+          },
+          "en": {
+            "label": "Our philosophy",
+            "quote": "A good idea reaches its full value when it is properly thought through, designed and communicated.",
+            "text": "We don’t simply create digital: we build identities, experiences and strategies that give brands the means to stand out and grow. Our mission: turn ideas into coherent, creative and high-performing digital experiences."
+          }
+        }
+      },
+      {
+        "type": "team",
+        "settings": null,
+        "content": {
+          "fr": {
+            "title": "Des associés complémentaires, un seul commando",
+            "body": "IMMO Digital est né de la volonté de réunir sous un même toit les quatre compétences fondamentales du numérique.\n\nPas de sous-traitance, pas d’intermédiaire : chaque projet est conçu, construit et sécurisé par ceux qui en répondent devant vous.",
+            "members": [
+              {
+                "title": "IA & Data",
+                "text": "Automatise vos processus, relie vos outils et fait travailler vos données."
+              },
+              {
+                "title": "Développement Fullstack",
+                "text": "Construit applications web, mobiles et API sur lesquelles vous pouvez compter."
+              },
+              {
+                "title": "Direction Artistique & UI/UX",
+                "text": "Donne à l’ensemble une identité cohérente et une expérience simple à utiliser."
+              },
+              {
+                "title": "Infra & Sécurité",
+                "text": "Conçoit la disponibilité, la protection des données et la reprise en cas d’incident."
+              }
+            ]
+          },
+          "en": {
+            "title": "Complementary partners, one commando",
+            "body": "IMMO Digital was born from the will to bring the four fundamental digital skills together under one roof.\n\nNo subcontracting, no middleman: every project is designed, built and secured by the people who answer for it to you.",
+            "members": [
+              {
+                "title": "AI & Data",
+                "text": "Automates your processes, connects your tools and puts your data to work."
+              },
+              {
+                "title": "Fullstack Development",
+                "text": "Builds web and mobile applications and APIs you can count on."
+              },
+              {
+                "title": "Art Direction & UI/UX",
+                "text": "Gives everything a coherent identity and an experience that’s simple to use."
+              },
+              {
+                "title": "Infra & Security",
+                "text": "Designs for availability, data protection and recovery in case of incident."
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "commitments",
+        "settings": null,
+        "content": {
+          "fr": {
+            "title": "Nos engagements",
+            "intro": "Mettre le numérique de pointe au service de la population et du développement des entreprises, avec quatre exigences.",
+            "items": [
+              {
+                "title": "Créativité",
+                "text": "Imaginer des concepts originaux et des identités visuelles fortes pour créer une vraie différence."
+              },
+              {
+                "title": "Innovation",
+                "text": "Explorer les nouvelles tendances et technologies pour offrir des solutions modernes et évolutives."
+              },
+              {
+                "title": "Performance",
+                "text": "Chaque création vise à améliorer la visibilité, renforcer l’image de marque et développer l’activité."
+              },
+              {
+                "title": "Proximité",
+                "text": "Chaque client est un véritable partenaire : l’écoute et l’échange sont au cœur de chaque projet."
+              }
+            ],
+            "button": "Rencontrer l’équipe",
+            "href": "/contact"
+          },
+          "en": {
+            "title": "Our commitments",
+            "intro": "Putting cutting-edge digital technology at the service of people and business development, with four standards.",
+            "items": [
+              {
+                "title": "Creativity",
+                "text": "Imagining original concepts and strong visual identities to make a real difference."
+              },
+              {
+                "title": "Innovation",
+                "text": "Exploring new trends and technologies to deliver modern, scalable solutions."
+              },
+              {
+                "title": "Performance",
+                "text": "Every creation aims to improve visibility, strengthen brand image and grow your business."
+              },
+              {
+                "title": "Proximity",
+                "text": "Every client is a true partner: listening and dialogue are at the heart of every project."
+              }
+            ],
+            "button": "Meet the team",
+            "href": "/contact"
+          }
+        }
+      }
+    ]
+  },
+  "recommandations": {
+    "title": {
+      "fr": "Recommandations",
+      "en": "Testimonials"
+    },
+    "meta_title": {
+      "fr": "Recommandations & cas clients — IMMO Digital",
+      "en": "Testimonials & case studies — IMMO Digital"
+    },
+    "meta_description": {
+      "fr": "Les avis de dirigeants et DSI accompagnés par IMMO Digital, vérifiés depuis le Portail Client après livraison.",
+      "en": "Feedback from the leaders and IT directors IMMO Digital works with, verified from the Client Portal after delivery."
+    },
+    "sections": [
+      {
+        "type": "page_header",
+        "settings": {
+          "size": "lg"
+        },
+        "content": {
+          "fr": {
+            "title": "Ce que disent ceux que nous accompagnons"
+          },
+          "en": {
+            "title": "What the people we work with say"
+          }
+        }
+      },
+      {
+        "type": "stats",
+        "settings": {
+          "background": "satin",
+          "spacing": "compact"
+        },
+        "content": {
+          "fr": {
+            "items": [
+              {
+                "value": "4",
+                "label": "pôles d’expertise réunis dans une seule équipe"
+              },
+              {
+                "value": "30 min",
+                "label": "pour cadrer votre projet avec l’expert du pôle concerné"
+              },
+              {
+                "value": "1",
+                "label": "portail client pour suivre tâches, livrables, factures et support"
+              }
+            ]
+          },
+          "en": {
+            "items": [
+              {
+                "value": "4",
+                "label": "areas of expertise in a single team"
+              },
+              {
+                "value": "30 min",
+                "label": "to scope your project with the right specialist"
+              },
+              {
+                "value": "1",
+                "label": "client portal for tasks, deliverables, invoices and support"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "type": "testimonials_wall",
+        "settings": {
+          "background": "satin",
+          "spacing": "compact"
+        },
+        "content": {
+          "fr": {
+            "title": "Le mur des recommandations",
+            "empty_text": "Les premiers avis vérifiés seront publiés ici après la livraison de nos projets."
+          },
+          "en": {
+            "title": "Testimonial wall",
+            "empty_text": "The first verified testimonials will be published here once our projects are delivered."
+          }
+        }
+      },
+      {
+        "type": "callout",
+        "settings": {
+          "spacing": "compact"
+        },
+        "content": {
+          "fr": {
+            "title": "Notre règle de publication",
+            "text": "Nous publions uniquement les avis de clients dont nous avons livré le projet, avec leur accord écrit. Aucun avis n’est rédigé ni modifié par notre équipe.",
+            "link_label": "Lancer votre projet",
+            "href": "/contact"
+          },
+          "en": {
+            "title": "Our publishing rule",
+            "text": "We only publish reviews from clients whose project we have delivered, with their written consent. No review is written or edited by our team.",
+            "link_label": "Start your project",
+            "href": "/contact"
+          }
+        }
+      }
+    ]
+  },
+  "contact": {
+    "title": {
+      "fr": "Contact",
+      "en": "Contact"
+    },
+    "meta_title": {
+      "fr": "Contact — IMMO Digital",
+      "en": "Contact — IMMO Digital"
+    },
+    "meta_description": {
+      "fr": "Choisissez votre besoin, votre échéance et réservez une session de cadrage de 30 minutes avec un associé IMMO Digital.",
+      "en": "Choose your need and timeline, then book a 30-minute scoping session with an IMMO Digital partner."
+    },
+    "sections": [
+      {
+        "type": "booking",
+        "settings": {
+          "background": "satin",
+          "spacing": "normal",
+          "layout": "page"
+        },
+        "content": {
+          "fr": {
+            "title": "Parlons de votre projet en trois étapes",
+            "intro": "Dites-nous ce que vous voulez accomplir, puis réservez directement 30 minutes avec l’associé expert du pôle concerné.",
+            "aside_title": "Vous préférez nous écrire ?"
+          },
+          "en": {
+            "title": "Let’s talk about your project in three steps",
+            "intro": "Tell us what you want to achieve, then book 30 minutes directly with the expert partner of the relevant team.",
+            "aside_title": "Prefer to write to us?"
+          }
+        }
+      }
+    ]
+  },
+  "tech-insights": {
+    "title": {
+      "fr": "Tech Insights",
+      "en": "Tech Insights"
+    },
+    "meta_title": {
+      "fr": "Tech Insights — IMMO Digital",
+      "en": "Tech Insights — IMMO Digital"
+    },
+    "meta_description": {
+      "fr": "Articles techniques et cas pratiques d’ingénierie : IA & automatisation, fullstack, infrastructure et sécurité.",
+      "en": "Technical articles and engineering case studies: AI & automation, fullstack, infrastructure and security."
+    },
+    "sections": [
+      {
+        "type": "page_header",
+        "settings": {
+          "size": "lg"
+        },
+        "content": {
+          "fr": {
+            "title": "Tech Insights : l’ingénierie expliquée par ceux qui la pratiquent",
+            "intro": "Articles techniques et cas pratiques rédigés par les associés d’IMMO Digital."
+          },
+          "en": {
+            "title": "Tech Insights: engineering explained by those who practise it",
+            "intro": "Technical articles and case studies written by the partners of IMMO Digital."
+          }
+        }
+      },
+      {
+        "type": "posts_list",
+        "settings": {
+          "background": "satin",
+          "spacing": "compact",
+          "count": "all"
+        },
+        "content": {
+          "fr": {},
+          "en": {}
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+/* Activé automatiquement dès que public/fonts/Gilroy-Regular.woff2 existe (src/lib/fonts.ts). */
+@font-face { font-family: 'Gilroy'; font-weight: 400; font-display: swap; src: url('/fonts/Gilroy-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Gilroy'; font-weight: 500; font-display: swap; src: url('/fonts/Gilroy-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'Gilroy'; font-weight: 600; font-display: swap; src: url('/fonts/Gilroy-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'Gilroy'; font-weight: 700; font-display: swap; src: url('/fonts/Gilroy-Bold.woff2') format('woff2'); }
+@font-face { font-family: 'Gilroy'; font-weight: 800; font-display: swap; src: url('/fonts/Gilroy-ExtraBold.woff2') format('woff2'); }

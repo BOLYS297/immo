@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Gilroy : chargée par /fonts/gilroy.css uniquement si les fichiers .woff2 sont présents (voir src/lib/fonts.ts). */
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  h1, h2, h3 { word-spacing: 0.08em; text-wrap: balance; }
+  body { @apply bg-immo-satin font-sans text-immo-dark antialiased; line-height: 1.65; }
+  .dark body { @apply bg-immo-dark text-immo-satin; }
+  :focus-visible { @apply outline outline-2 outline-offset-2 outline-immo-cyan; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+}
+
+@layer components {
+  .bg-grid {
+    background-image: linear-gradient(to right, rgba(39,52,128,.08) 1px, transparent 1px), linear-gradient(to bottom, rgba(39,52,128,.08) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black, transparent 75%);
+  }
+  .dark .bg-grid {
+    background-image: linear-gradient(to right, rgba(255,255,255,.07) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,.07) 1px, transparent 1px);
+  }
+}

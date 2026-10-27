@@ -1,0 +1,5 @@
+Déposez ici les fichiers Gilroy (licence requise) au format .woff2 :
+Gilroy-Regular.woff2, Gilroy-Medium.woff2, Gilroy-SemiBold.woff2, Gilroy-Bold.woff2, Gilroy-ExtraBold.woff2
+
+Dès que Gilroy-Regular.woff2 est présent, le site charge gilroy.css et précharge les graisses principales
+au prochain démarrage (aucun code à modifier). En attendant, la police Outfit s'affiche, sans requête en erreur.

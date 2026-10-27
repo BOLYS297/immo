@@ -1,0 +1,74 @@
+[
+  {
+    "slug": "haute-disponibilite-ce-que-signifie-99-99",
+    "date": "2026-10-16",
+    "readingMinutes": 3,
+    "published": true,
+    "fr": {
+      "title": "Haute disponibilité : ce que signifie vraiment 99,99 %",
+      "excerpt": "Environ 53 minutes d’arrêt par an : ce que cet objectif exige en redondance, en supervision et en plan de reprise.",
+      "tags": [
+        "Infra & Sécurité",
+        "Cloud"
+      ],
+      "body": "Une disponibilité de 99,99 % autorise environ 53 minutes d’indisponibilité sur une année entière. Ce n’est pas un réglage : c’est une architecture.\n\n## Supprimer les points uniques de défaillance\n\nPlusieurs instances derrière un répartiteur de charge, une base de données répliquée et un CDN devant l’application évitent qu’une seule panne n’arrête le service.\n\n## Superviser et alerter\n\nOn ne corrige que ce que l’on voit. Des sondes externes, des alertes qui réveillent la bonne personne et des tableaux de bord lisibles réduisent le temps de détection.\n\n## Répéter la reprise d’activité\n\n- Des sauvegardes régulières, restaurées pour de vrai lors d’exercices planifiés.\n- Un plan de reprise écrit, avec des responsables nommés.\n- Des déploiements progressifs qui permettent un retour arrière rapide."
+    },
+    "en": {
+      "title": "High availability: what 99.99% really means",
+      "excerpt": "About 53 minutes of downtime a year: what this target demands in redundancy, monitoring and recovery planning.",
+      "tags": [
+        "Infra & Security",
+        "Cloud"
+      ],
+      "body": "99.99% availability allows about 53 minutes of downtime over a whole year. It isn’t a setting: it’s an architecture.\n\n## Remove single points of failure\n\nSeveral instances behind a load balancer, a replicated database and a CDN in front of the application stop a single failure from taking the service down.\n\n## Monitor and alert\n\nYou can only fix what you can see. External probes, alerts that wake the right person and readable dashboards shorten detection time.\n\n## Rehearse recovery\n\n- Regular backups, actually restored during planned drills.\n- A written recovery plan, with named owners.\n- Progressive deployments that allow a fast rollback."
+    }
+  },
+  {
+    "slug": "nextjs-performance-site-b2b",
+    "date": "2026-10-16",
+    "readingMinutes": 4,
+    "published": true,
+    "fr": {
+      "title": "Next.js et performance : les leviers qui comptent pour un site B2B",
+      "excerpt": "Composants serveur, images, polices, code chargé à la demande : ce qui fait réellement gagner des secondes sur un site vitrine ou une application métier.",
+      "tags": [
+        "Fullstack",
+        "Performance"
+      ],
+      "body": "Un site lent coûte des visiteurs et des demandes de contact. Sur Next.js, quelques choix pèsent plus que tous les autres.\n\n## Envoyer moins de JavaScript\n\nLes composants serveur produisent du HTML sans envoyer leur code au navigateur. Réservez les composants clients aux zones réellement interactives : formulaires, menus, visualisations.\n\n## Charger les éléments lourds à la demande\n\nUne scène 3D, un éditeur ou une carte n’ont pas à bloquer l’affichage initial. Chargez-les après le premier rendu, avec un visuel de remplacement léger.\n\n## Soigner images et polices\n\n- Utiliser next/image pour les formats modernes et les bonnes dimensions.\n- Déclarer les polices avec un affichage de secours pour éviter le texte invisible.\n- Réserver la place des médias pour éviter les décalages de mise en page.\n\n## Mesurer sur de vrais appareils\n\nLighthouse donne un point de départ, mais les mesures de terrain sur des téléphones courants et des connexions variables disent la vérité. Corrigez ce qui pénalise vos visiteurs réels."
+    },
+    "en": {
+      "title": "Next.js and performance: the levers that matter for a B2B site",
+      "excerpt": "Server components, images, fonts, code loaded on demand: what really saves seconds on a showcase site or a business application.",
+      "tags": [
+        "Fullstack",
+        "Performance"
+      ],
+      "body": "A slow site costs visitors and contact requests. On Next.js, a few choices weigh more than all the others.\n\n## Ship less JavaScript\n\nServer components produce HTML without sending their code to the browser. Keep client components for the genuinely interactive areas: forms, menus, visualisations.\n\n## Load heavy elements on demand\n\nA 3D scene, an editor or a map shouldn’t block the initial display. Load them after the first render, with a lightweight placeholder.\n\n## Take care of images and fonts\n\n- Use next/image for modern formats and the right dimensions.\n- Declare fonts with a fallback display to avoid invisible text.\n- Reserve space for media to avoid layout shifts.\n\n## Measure on real devices\n\nLighthouse is a starting point, but field measurements on everyday phones and varied connections tell the truth. Fix what penalises your real visitors."
+    }
+  },
+  {
+    "slug": "automatiser-un-processus-avec-n8n",
+    "date": "2026-10-16",
+    "readingMinutes": 4,
+    "published": true,
+    "fr": {
+      "title": "Automatiser un processus d’entreprise avec n8n : par où commencer",
+      "excerpt": "Cartographier, choisir le bon premier workflow, gérer les erreurs et mesurer le gain : la méthode que nous appliquons avant de brancher le moindre outil.",
+      "tags": [
+        "IA & Automatisation",
+        "n8n"
+      ],
+      "body": "Automatiser n’importe quoi est facile. Automatiser ce qui compte, et le garder fiable dans la durée, demande de la méthode. Voici la nôtre.\n\n## 1. Cartographier avant d’automatiser\n\nListez les tâches répétitives de l’équipe : qui les fait, à quelle fréquence, avec quels outils, et combien de temps elles prennent. Le meilleur premier candidat est une tâche fréquente, bien définie et sans jugement subtil.\n\n## 2. Choisir un premier workflow simple\n\nUn workflow court qui fonctionne vaut mieux qu’un scénario ambitieux jamais terminé. Une relance de facture, un tri d’emails entrants ou la création d’une fiche client depuis un formulaire sont de bons points de départ.\n\n## 3. Prévoir les erreurs dès le départ\n\n- Une alerte quand un workflow échoue, avec le contexte de l’échec.\n- Des relances automatiques limitées, pour ne pas dupliquer une action.\n- Une validation humaine pour les décisions à enjeu, comme un envoi de devis ou un paiement.\n\n## 4. Mesurer le gain\n\nRelevez le temps passé avant l’automatisation, puis après un mois. C’est ce chiffre, et non l’élégance technique, qui justifie d’automatiser le processus suivant."
+    },
+    "en": {
+      "title": "Automating a business process with n8n: where to start",
+      "excerpt": "Map, pick the right first workflow, handle errors and measure the gain: the method we apply before plugging in a single tool.",
+      "tags": [
+        "AI & Automation",
+        "n8n"
+      ],
+      "body": "Automating just anything is easy. Automating what matters, and keeping it reliable over time, takes method. Here is ours.\n\n## 1. Map before you automate\n\nList the team’s repetitive tasks: who does them, how often, with which tools, and how long they take. The best first candidate is a frequent, well-defined task with no subtle judgement involved.\n\n## 2. Pick a simple first workflow\n\nA short workflow that works beats an ambitious scenario that never ships. An invoice reminder, sorting incoming emails or creating a customer record from a form are good starting points.\n\n## 3. Plan for errors from day one\n\n- An alert when a workflow fails, with the context of the failure.\n- Limited automatic retries, so an action is never duplicated.\n- Human approval for high-stakes decisions, such as sending a quote or making a payment.\n\n## 4. Measure the gain\n\nRecord the time spent before automation, then again after a month. That figure, not technical elegance, is what justifies automating the next process."
+    }
+  }
+]
