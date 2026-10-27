@@ -7,6 +7,7 @@ use App\Models\QuoteRequest;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,16 +16,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Administrateur initial sécurisé
+        // 1. Administrateur initial : identifiants lus dans .env (ADMIN_EMAIL, ADMIN_PASSWORD), jamais écrits dans le code.
+        //    Sans ADMIN_PASSWORD, un mot de passe aléatoire est créé et affiché une seule fois.
+        $email = env('ADMIN_EMAIL', 'admin@agence-digitale.com');
+        $password = env('ADMIN_PASSWORD');
+        $generated = blank($password);
+        if ($generated) {
+            $password = Str::password(20);
+        }
+
         $admin = User::firstOrCreate(
-            ['email' => 'admin@agence-digitale.com'],
+            ['email' => $email],
             [
                 'name' => 'Directeur Technique',
-                'password' => Hash::make('AdminSecure2026!'),
+                'password' => Hash::make($password),
                 'role' => 'admin',
                 'is_active' => true,
             ]
         );
+        if ($admin->wasRecentlyCreated && $generated) {
+            $this->command?->warn("Administrateur créé : {$email} / {$password} (notez ce mot de passe, il ne sera plus affiché).");
+        }
 
         // 2. Réglages du site : valeurs par défaut de config/cms.php (settings), modifiables dans l'admin.
 
