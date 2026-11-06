@@ -16,6 +16,7 @@ STATE="$ROOT/state"
 GITHUB_REPO="${IMMO_GITHUB_REPO:-BOLYS297/immo}"
 WORKFLOW="${IMMO_CI_WORKFLOW:-ci.yml}"
 mkdir -p "$STATE"
+cd "$ROOT"
 
 sha="$(git ls-remote "https://github.com/$GITHUB_REPO.git" refs/heads/main | cut -f1)"
 [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "main introuvable sur $GITHUB_REPO" >&2; exit 1; }

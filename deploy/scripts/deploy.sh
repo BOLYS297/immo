@@ -16,6 +16,7 @@ main() {
   local ROOT="${IMMO_ROOT:-/opt/immo}"
   local REPO="$ROOT/repo" ENV_DIR="$ROOT/env" STATE="$ROOT/state" BUILDER="immo-builder"
   mkdir -p "$STATE" "$ROOT/edge"
+  cd "$ROOT"  # répertoire courant lisible par l'utilisateur immo (Compose en a besoin)
 
   exec 9>"$ROOT/deploy.lock"
   flock -w 1800 9 || { log "Un autre déploiement est en cours" >&2; exit 75; }
