@@ -1,0 +1,14 @@
+[Unit]
+Description=IMMO Digital - sauvegarde de la base MySQL et des fichiers
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=immo
+Group=immo
+SupplementaryGroups=docker
+ExecStart=/usr/local/sbin/immo-backup
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=30min

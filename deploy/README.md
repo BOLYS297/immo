@@ -59,10 +59,30 @@ Secrets : `/opt/immo/env/{back,front,mysql,compose}.env` (droits 600, utilisateu
 `docker compose … up -d back front` (`front.env` : variables lues au démarrage ; `NEXT_PUBLIC_*`, `CMS_API_URL`,
 `ADMIN_ORIGINS`, `MEDIA_HOSTS` sont aussi intégrées à la construction → redéployer).
 
-Sauvegarde de la base :
+## Sauvegardes
+
+`immo-backup` (minuteur systemd, chaque nuit vers 03:30 UTC, rattrapé au démarrage si le serveur était éteint) :
+
+- `immo-db-<date>.sql.gz` : dump MySQL cohérent sans verrou, vérifié (archive + fin de dump) ;
+- `immo-storage-<date>.tar.gz` : médiathèque (`app/public`) et pièces jointes des devis (`app/private`) ;
+- dans `/opt/immo/backups` (droits 700), conservés 14 jours. Ce dossier est inclus dans les sauvegardes complètes du
+  VPS faites par Hostinger (hPanel → VPS → Sauvegardes), donc aussi copié hors du serveur.
+
 ```bash
-docker exec immo-mysql-1 sh -c 'mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" --single-transaction immo' | gzip > immo-$(date +%F).sql.gz
+systemctl start immo-backup && journalctl -u immo-backup -n 5    # sauvegarde immédiate
+ls -lh /opt/immo/backups
+systemctl list-timers immo-backup.timer                          # prochaine exécution
 ```
+
+Restauration (remplace les données actuelles : faire d'abord une sauvegarde immédiate) :
+```bash
+B=/opt/immo/backups
+gunzip -c $B/immo-db-<date>.sql.gz | docker exec -i immo-mysql-1 sh -c 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
+docker exec -i immo-back-1 tar -C /app/storage -xzf - < $B/immo-storage-<date>.tar.gz
+```
+
+Le cron du serveur `docker image prune -af --filter until=24h` (antérieur à immo) purge les images inutilisées :
+`deploy.sh --rollback` reconstruit alors la version précédente au lieu de la reprendre du cache.
 
 ## Installation initiale (déjà faite, pour mémoire)
 
