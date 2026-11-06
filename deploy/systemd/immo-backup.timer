@@ -1,0 +1,11 @@
+[Unit]
+Description=IMMO Digital - sauvegarde quotidienne
+
+[Timer]
+OnCalendar=*-*-* 03:30:00 UTC
+RandomizedDelaySec=10min
+# Serveur éteint à l'heure prévue : sauvegarde rattrapée au démarrage.
+Persistent=true
+
+[Install]
+WantedBy=timers.target

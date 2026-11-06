@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Mise en ligne d'un commit de la pile immo (idempotent). Exécuté par l'utilisateur « immo » sur le serveur :
 #   /opt/immo/repo/deploy/scripts/deploy.sh <commit>     construit, migre, démarre, vérifie ; retour arrière si échec
-#   /opt/immo/repo/deploy/scripts/deploy.sh --rollback   remet en service la version précédente (images en cache)
+#   /opt/immo/repo/deploy/scripts/deploy.sh --rollback   remet en service la version précédente (reconstruite si purgée)
 # Appelé automatiquement par immo-autodeploy quand la CI GitHub est verte sur main.
 #
 # Ne gêne pas GLOBUS : construction dans un builder BuildKit plafonné (1 processeur, 3 Go), projet Compose distinct,
@@ -31,10 +31,15 @@ main() {
   prev="$(cat "$STATE/deployed" 2>/dev/null || true)"
   if [[ "${1:-}" == "--rollback" ]]; then
     target="$(grep -vx ".* $prev" "$STATE/releases.log" 2>/dev/null | tail -n 1 | cut -d' ' -f2 || true)"
-    [[ -n "$target" ]] && docker image inspect "immo/back:$target" "immo/front:$target" >/dev/null 2>&1 \
-      || { log "Aucune version précédente en cache" >&2; exit 1; }
-    git -C "$REPO" -c advice.detachedHead=false checkout --quiet --force --detach "$target"
-    skip_build=1
+    [[ -n "$target" ]] || { log "Aucune version précédente" >&2; exit 1; }
+    if docker image inspect "immo/back:$target" "immo/front:$target" >/dev/null 2>&1; then
+      git -C "$REPO" -c advice.detachedHead=false checkout --quiet --force --detach "$target"
+      skip_build=1
+    else
+      # Le cron du serveur « docker image prune -af --filter until=24h » purge les images inutilisées.
+      log "Images de ${target:0:12} purgées : reconstruction"
+      skip_build=0
+    fi
   else
     target="${1:-}"
     [[ "$target" =~ ^[0-9a-f]{40}$ ]] || { echo "Usage : deploy.sh <commit 40 caractères> | --rollback" >&2; exit 2; }
