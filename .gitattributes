@@ -1,0 +1,4 @@
+# Scripts et configuration exécutés sur le serveur Linux : fins de ligne LF quel que soit le poste.
+deploy/** text eol=lf
+*.sh text eol=lf
+.github/** text eol=lf

@@ -40,6 +40,8 @@ const previewHeaders = [
 
 const nextConfig = {
   reactStrictMode: true,
+  // Image Docker de production (deploy/front.Dockerfile) : serveur autonome sans node_modules complet.
+  output: 'standalone',
   images: { remotePatterns: mediaPatterns },
   // Les navigateurs et robots demandent /favicon.ico d'office : on sert l'icône du site plutôt qu'une 404.
   async rewrites() {

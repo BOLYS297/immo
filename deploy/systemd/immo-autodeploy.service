@@ -1,0 +1,16 @@
+[Unit]
+Description=IMMO Digital - deploiement continu (commit main avec CI verte)
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=immo
+Group=immo
+SupplementaryGroups=docker
+ExecStart=/usr/local/sbin/immo-autodeploy
+# Construction plafonnée par le builder BuildKit ; priorité basse en plus pour les commandes locales.
+Nice=10
+IOSchedulingClass=idle
+TimeoutStartSec=45min
