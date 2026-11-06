@@ -1,0 +1,97 @@
+# IMMO Digital — intégration continue. Sur main, un résultat vert déclenche le déploiement : le serveur
+# (immo-autodeploy, deploy/README.md) surveille main et ne met en ligne qu'un commit dont ce workflow a réussi.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
+permissions:
+  contents: read
+
+jobs:
+  back:
+    name: Laravel (tests)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: immo_testing
+        ports: ["3306:3306"]
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -proot --silent"
+          --health-interval=5s --health-timeout=5s --health-retries=30
+    defaults:
+      run:
+        working-directory: immo-back
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: root
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_mysql, intl, zip, bcmath, exif, gd
+          coverage: none
+      - name: Cache Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.composer/cache/files
+          key: composer-${{ hashFiles('immo-back/composer.lock') }}
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
+      - run: php artisan test
+
+  images:
+    name: Images Docker (construction du site et de l'admin)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: docker/setup-buildx-action@v3
+      - name: Image admin / API (Laravel)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/back.Dockerfile
+          push: false
+          cache-from: type=gha,scope=back
+          cache-to: type=gha,scope=back,mode=max
+      - name: Image site (Next.js)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: deploy/front.Dockerfile
+          push: false
+          cache-from: type=gha,scope=front
+          cache-to: type=gha,scope=front,mode=max
+
+  deploy-config:
+    name: Scripts et configuration de déploiement
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - name: ShellCheck
+        run: shellcheck -S warning deploy/scripts/*.sh deploy/back/entrypoint.sh
+      - name: docker compose config
+        run: IMMO_VERSION=ci IMMO_ENV_DIR=/tmp/env bash -c 'mkdir -p /tmp/env && touch /tmp/env/{back,front,mysql}.env && docker compose -f deploy/docker-compose.yml config -q'
+      - name: nginx -t (configuration immo)
+        run: |
+          mkdir -p /tmp/le/live/immodigital.tech
+          openssl req -x509 -newkey rsa:2048 -nodes -days 1 -subj /CN=immodigital.tech \
+            -keyout /tmp/le/live/immodigital.tech/privkey.pem -out /tmp/le/live/immodigital.tech/fullchain.pem 2>/dev/null
+          docker run --rm -v "$PWD/deploy/nginx/immo.conf:/etc/nginx/conf.d/immo.conf:ro" -v /tmp/le:/etc/letsencrypt:ro \
+            nginx:1.27-alpine nginx -t

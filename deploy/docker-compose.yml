@@ -1,0 +1,116 @@
+# IMMO Digital — pile de production (Docker Compose v2), projet « immo » indépendant de la pile GLOBUS.
+#
+# Images construites sur le serveur par deploy/scripts/deploy.sh (étiquette = commit déployé : IMMO_VERSION).
+# Secrets : /opt/immo/env/*.env (générés sur le serveur par init-env.sh, jamais versionnés).
+#
+# Cohabitation avec GLOBUS sur le même serveur :
+#   - aucun port publié : le frontal nginx de GLOBUS (80/443) est relié au réseau « immo_edge » et sert les hôtes
+#     immodigital.tech / admin.immodigital.tech (deploy/nginx/immo.conf, installé par immo-edge-sync) ;
+#   - noms de services jamais utilisés par GLOBUS (pas de « web », « api »…) : alias réseau immo-front / immo-back ;
+#   - mémoire et processeur plafonnés pour chaque conteneur : la pile immo ne peut pas affamer GLOBUS.
+
+name: immo
+
+x-logging: &logging
+  driver: json-file
+  options: { max-size: "10m", max-file: "3" }
+
+x-back: &back
+  image: immo/back:${IMMO_VERSION:?IMMO_VERSION requis}
+  env_file: ${IMMO_ENV_DIR:-/opt/immo/env}/back.env
+  restart: unless-stopped
+  security_opt: ["no-new-privileges:true"]
+  volumes:
+    - storage:/app/storage
+  extra_hosts:
+    # Appels vers le front (revalidation du cache) : directement par le frontal local, sans dépendre du DNS public.
+    - "${IMMO_DOMAIN:-immodigital.tech}:host-gateway"
+    - "${IMMO_ADMIN_DOMAIN:-admin.immodigital.tech}:host-gateway"
+  logging: *logging
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    env_file: ${IMMO_ENV_DIR:-/opt/immo/env}/mysql.env
+    command:
+      - --innodb-buffer-pool-size=256M
+      - --performance-schema=OFF
+      - --max-connections=60
+      - --skip-name-resolve
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 40s
+    mem_limit: 768m
+    cpus: 1.0
+    networks: [internal]
+    logging: *logging
+
+  migrate:
+    <<: *back
+    command: ["php", "artisan", "migrate", "--force"]
+    restart: "no"
+    healthcheck:
+      disable: true
+    depends_on:
+      mysql: { condition: service_healthy }
+    mem_limit: 384m
+    cpus: 1.0
+    networks: [internal]
+
+  back:
+    <<: *back
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    mem_limit: 512m
+    cpus: 1.0
+    networks:
+      internal: {}
+      edge:
+        aliases: [immo-back]
+
+  scheduler:
+    <<: *back
+    command: ["php", "artisan", "schedule:work"]
+    healthcheck:
+      disable: true
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    mem_limit: 192m
+    cpus: 0.25
+    networks: [internal, edge]
+
+  front:
+    image: immo/front:${IMMO_VERSION:?IMMO_VERSION requis}
+    env_file: ${IMMO_ENV_DIR:-/opt/immo/env}/front.env
+    restart: unless-stopped
+    security_opt: ["no-new-privileges:true"]
+    extra_hosts:
+      # Lecture de l'API Laravel (CMS_API_URL publique) par le frontal local, sans aller-retour par le DNS public.
+      - "${IMMO_DOMAIN:-immodigital.tech}:host-gateway"
+      - "${IMMO_ADMIN_DOMAIN:-admin.immodigital.tech}:host-gateway"
+    mem_limit: 512m
+    cpus: 1.0
+    networks:
+      edge:
+        aliases: [immo-front]
+    logging: *logging
+
+volumes:
+  mysql:
+  storage:
+
+networks:
+  # Base de données : jamais joignable hors de la pile, pas d'accès Internet.
+  internal:
+    internal: true
+  # Réseau partagé avec le frontal nginx (relié par immo-edge-sync).
+  edge:
+    name: immo_edge

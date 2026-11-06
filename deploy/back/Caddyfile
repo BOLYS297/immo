@@ -1,0 +1,21 @@
+# IMMO Digital — serveur PHP (FrankenPHP). HTTP seul : le TLS est terminé par le frontal nginx du serveur.
+{
+	auto_https off
+	admin off
+	frankenphp
+	servers {
+		# Frontal nginx sur un réseau Docker privé : en-têtes X-Forwarded-* acceptés de ces adresses seulement.
+		trusted_proxies static private_ranges
+	}
+}
+
+:8080 {
+	root * /app/public
+	encode zstd gzip
+
+	# Fichiers cachés (.env, .git, .htaccess…) jamais servis.
+	@hidden path */.*
+	respond @hidden 404
+
+	php_server
+}

@@ -1,0 +1,26 @@
+# Contexte Docker = racine du dépôt (deploy/*.Dockerfile).
+.git
+.github
+.claude
+**/node_modules
+**/.next
+**/.env
+**/.env.*
+!**/.env.example
+**/*.log
+immo-back/vendor
+immo-back/public/storage
+immo-back/public/hot
+immo-back/storage/app/public/*
+immo-back/storage/app/private/*
+immo-back/storage/framework/cache/data/*
+immo-back/storage/framework/sessions/*
+immo-back/storage/framework/views/*
+immo-back/storage/logs/*
+immo-back/.agents
+immo-back/.phpunit.cache
+immo-back/CLAUDE.md
+immo-back/AGENTS.md
+immo-back/boost.json
+deploy/scripts
+deploy/systemd
