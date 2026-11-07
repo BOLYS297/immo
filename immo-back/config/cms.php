@@ -546,12 +546,20 @@ $config = [
             'label' => 'Coordonnées',
             'icon' => 'bi-telephone',
             'fields' => [
-                'contact_email' => ['type' => 'email', 'label' => 'E-mail de contact', 'help' => 'Affiché dans le pied de page, la page Contact et les mentions légales. Vide = non affiché.'],
                 'contact_phones' => ['type' => 'lines', 'label' => 'Téléphones', 'max' => 4, 'default' => "+237 678 261 382\n+237 694 072 875", 'help' => 'Un numéro par ligne, au format international.'],
                 'contact_whatsapp' => ['type' => 'phone', 'label' => 'Numéro WhatsApp', 'default' => '+237 678 261 382'],
                 'contact_address' => ['type' => 'lines', 'label' => 'Adresse', 'max' => 4, 'translatable' => true, 'default' => ['fr' => "Douala, Yassa\nÀ côté de Eneo", 'en' => "Douala, Yassa\nNext to Eneo"], 'help' => 'Une ligne par ligne d\'adresse.'],
             ],
         ],
+        'emails' => [
+            'label' => 'E-mails de l\'entreprise',
+            'icon' => 'bi-envelope',
+            'fields' => [
+                'contact_email' => ['type' => 'email', 'label' => 'E-mail principal', 'help' => 'Affiché dans le pied de page, la page Contact et les mentions légales. Vide = non affiché.'],
+                'contact_emails' => ['type' => 'emails', 'label' => 'Autres e-mails', 'max' => 6, 'translatable' => true, 'help' => 'Une adresse par ligne, précédée d\'un libellé facultatif, ex. « Support : support@immodigital.tech ». Affichés sous l\'e-mail principal.'],
+            ],
+        ],
+
         'social' => [
             'label' => 'Réseaux sociaux',
             'icon' => 'bi-share',
