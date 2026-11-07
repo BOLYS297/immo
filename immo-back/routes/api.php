@@ -52,6 +52,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/me', [PortalController::class, 'me'])->name('me');
         Route::post('/logout', [PortalController::class, 'logout'])->name('logout');
         Route::post('/documents/{item}/sign', [PortalController::class, 'sign'])->name('sign');
+        Route::get('/documents/{item}/file', [PortalController::class, 'documentFile'])->name('document-file');
         Route::post('/tickets', [PortalController::class, 'ticket'])->middleware('throttle:portal-tickets')->name('tickets');
         Route::put('/password', [PortalController::class, 'password'])->name('password');
     });

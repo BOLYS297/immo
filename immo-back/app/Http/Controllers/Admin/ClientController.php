@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\PortalItem;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -16,7 +18,7 @@ class ClientController extends Controller
 {
     public function index(): View
     {
-        $clients = User::clients()->withCount('portalItems')->orderBy('company')->orderBy('name')->paginate(20);
+        $clients = User::clients()->withCount(['clientProjects', 'portalItems'])->orderBy('company')->orderBy('name')->paginate(20);
 
         return view('admin.clients.index', compact('clients'));
     }
@@ -33,12 +35,15 @@ class ClientController extends Controller
         return redirect()->route('admin.clients.show', $client)->with('success', 'Client créé. Communiquez-lui son mot de passe temporaire par un canal sûr.');
     }
 
-    public function show(User $client): View
+    /** Fiche du client : ses projets, et les éléments du projet choisi (?projet=…, sinon le plus récent). */
+    public function show(Request $request, User $client): View
     {
-        $items = $client->portalItems()->latest()->get()->groupBy('type');
+        $projects = $client->clientProjects()->newestFirst()->withCount('items')->get();
+        $project = $projects->firstWhere('id', $request->integer('projet')) ?? $projects->first();
+        $items = $project ? $project->items()->latest()->orderByDesc('id')->get()->groupBy('type') : collect();
         $types = config('portal.types');
 
-        return view('admin.clients.show', compact('client', 'items', 'types'));
+        return view('admin.clients.show', compact('client', 'projects', 'project', 'items', 'types'));
     }
 
     public function edit(User $client): View
@@ -62,7 +67,8 @@ class ClientController extends Controller
     public function destroy(User $client): RedirectResponse
     {
         $client->tokens()->delete();
-        $client->delete(); // ses éléments du portail sont supprimés en cascade
+        $client->delete(); // ses projets et éléments du portail sont supprimés en cascade
+        Storage::disk(PortalItem::FILE_DISK)->deleteDirectory("portal/{$client->id}");
 
         return redirect()->route('admin.clients.index')->with('success', 'Client et éléments de son portail supprimés.');
     }

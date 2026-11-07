@@ -11,8 +11,10 @@
 | attendues par le front (immo-front/src/lib/portal-types.ts).
 |
 | Types de champs : text, textarea, url (http/https), integer (min, max),
-| amount (entier ≥ 0, vide autorisé), select (options ; `int` = valeurs numériques).
-| Tous les éléments ont en plus un titre (120 caractères).
+| amount (entier ≥ 0, vide autorisé), select (options ; `int` = valeurs numériques),
+| file (fichier joint sur le disque privé : `mimes`, `max_kb` ; servi au seul client
+| connecté et à l'équipe). Tous les éléments ont en plus un titre (120 caractères)
+| et appartiennent à un projet du client (table client_projects).
 |
 */
 
@@ -58,6 +60,8 @@ return [
                 'kind' => ['type' => 'select', 'label' => 'Type', 'default' => 'invoice', 'options' => ['quote' => 'Devis', 'contract' => 'Contrat', 'invoice' => 'Facture']],
                 'amount' => ['type' => 'amount', 'label' => 'Montant (FCFA)'],
                 'status' => ['type' => 'select', 'label' => 'Statut', 'default' => 'pending', 'options' => ['toSign' => 'À signer', 'signed' => 'Signé', 'paid' => 'Payée', 'pending' => 'En attente']],
+                'file' => ['type' => 'file', 'label' => 'Fichier (PDF ou image, 10 Mo max)', 'mimes' => ['pdf', 'png', 'jpg', 'jpeg', 'webp'], 'max_kb' => 10240],
+                'url' => ['type' => 'url', 'label' => 'Ou lien externe (Google Drive…)', 'max' => 500],
             ],
         ],
 
@@ -74,6 +78,9 @@ return [
         ],
 
     ],
+
+    // Statuts d'un projet client, affichés dans l'admin et l'espace client.
+    'project_statuses' => ['active' => 'En cours', 'paused' => 'En pause', 'done' => 'Terminé'],
 
     // Durée de validité d'une connexion au portail (jeton Sanctum).
     'session_days' => 7,
