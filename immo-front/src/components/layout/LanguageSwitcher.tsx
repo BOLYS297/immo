@@ -11,7 +11,8 @@ export default function LanguageSwitcher() {
     router.refresh();
   }
   return (
-    <div role="group" aria-label={t.a11y.language} className="flex rounded-full border border-immo-dark/20 p-0.5 dark:border-white/25">
+    // inline-flex : le sélecteur garde la taille de ses boutons, même dans le menu mobile (bloc pleine largeur).
+    <div role="group" aria-label={t.a11y.language} className="inline-flex w-fit rounded-full border border-immo-dark/20 p-0.5 dark:border-white/25">
       {LOCALES.map((l) => (
         <button key={l} type="button" lang={l} aria-pressed={locale === l} onClick={() => choose(l)}
           className={`rounded-full px-3 py-1.5 text-sm font-semibold transition-colors ${locale === l ? 'bg-immo-dark text-white dark:bg-immo-cyan dark:text-immo-dark' : 'hover:bg-immo-sky/50 dark:hover:bg-white/10'}`}>

@@ -14,7 +14,10 @@ class SettingService
 {
     private const CACHE_KEY = 'cms.settings';
 
-    private const MAX = ['select' => 40, 'text' => 255, 'textarea' => 1000, 'email' => 255, 'url' => 255, 'link' => 255, 'phone' => 30, 'lines' => 500];
+    private const MAX = ['select' => 40, 'text' => 255, 'textarea' => 1000, 'email' => 255, 'url' => 255, 'link' => 255, 'phone' => 30, 'lines' => 500, 'emails' => 1000];
+
+    /** Ligne d'un champ « emails » : « adresse » ou « Libellé : adresse » (libellé de 40 caractères au plus). */
+    public const EMAIL_LINE = '/^(?:(?<label>[^:\n]{1,40}?)\s*:\s*)?(?<email>[^\s:]+@[^\s:]+)$/u';
 
     /** Champs à plat : clé => définition. */
     public static function fields(): array
@@ -72,6 +75,7 @@ class SettingService
                 'link' => [BlockSchema::LINK],
                 'phone' => ['regex:/^\+?[0-9 ().-]{6,30}$/'],
                 'select' => [Rule::in(array_keys($field['options']))],
+                'emails' => [static::emailLinesRule($field['max'] ?? 6)],
                 default => [],
             }];
             if ($field['translatable'] ?? false) {
@@ -107,7 +111,7 @@ class SettingService
         foreach (static::fields() as $key => $field) {
             $clean = function ($value) use ($field) {
                 $value = trim(str_replace("\r\n", "\n", (string) $value));
-                if ($field['type'] === 'lines') {
+                if (in_array($field['type'], ['lines', 'emails'], true)) {
                     $value = implode("\n", array_slice(array_values(array_filter(array_map('trim', explode("\n", $value)), 'strlen')), 0, $field['max'] ?? 10));
                 }
 
@@ -128,6 +132,24 @@ class SettingService
 
         static::clearCache();
         FrontRevalidator::tags('site');
+    }
+
+    /** Chaque ligne non vide est une adresse valide, avec un libellé facultatif ; `max` lignes au plus. */
+    private static function emailLinesRule(int $max): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail) use ($max) {
+            $lines = array_values(array_filter(array_map('trim', explode("\n", str_replace("\r\n", "\n", (string) $value))), 'strlen'));
+            if (count($lines) > $max) {
+                $fail("Le champ :attribute accepte {$max} adresses au plus.");
+            }
+            foreach ($lines as $line) {
+                if (! preg_match(self::EMAIL_LINE, $line, $match) || ! filter_var($match['email'], FILTER_VALIDATE_EMAIL)) {
+                    $fail("Ligne « {$line} » : saisissez « adresse » ou « Libellé : adresse ».");
+
+                    return;
+                }
+            }
+        };
     }
 
     public static function clearCache(): void

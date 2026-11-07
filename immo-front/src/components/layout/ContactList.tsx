@@ -6,7 +6,20 @@ export default function ContactList({ contact, whatsappLabel, linkClass, classNa
   const icon = 'mt-0.5 shrink-0 text-immo-cyan';
   return (
     <ul className={className}>
-      {contact.email && <li className="flex gap-3"><Mail size={20} className={icon} aria-hidden /><a href={`mailto:${contact.email}`} className={linkClass}>{contact.email}</a></li>}
+      {(contact.email || contact.emails.length > 0) && (
+        <li className="flex gap-3">
+          <Mail size={20} className={icon} aria-hidden />
+          <span className="flex min-w-0 flex-col gap-1">
+            {contact.email && <a href={`mailto:${contact.email}`} className={`break-all ${linkClass}`}>{contact.email}</a>}
+            {contact.emails.map((e) => (
+              <span key={e.address} className="break-all">
+                {e.label && <span className="opacity-80">{e.label} : </span>}
+                <a href={`mailto:${e.address}`} className={linkClass}>{e.address}</a>
+              </span>
+            ))}
+          </span>
+        </li>
+      )}
       {contact.phones.length > 0 && (
         <li className="flex gap-3"><Phone size={20} className={icon} aria-hidden /><span className="flex flex-col">{contact.phones.map((p) => <a key={p.href} href={`tel:${p.href}`} className={linkClass}>{p.label}</a>)}</span></li>
       )}

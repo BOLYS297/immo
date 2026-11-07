@@ -51,8 +51,8 @@
                                                             <option value="{{ $optionValue }}" @selected((string) $value === (string) $optionValue)>{{ $optionLabel }}</option>
                                                         @endforeach
                                                     </select>
-                                                @elseif(in_array($field['type'], ['textarea', 'lines']))
-                                                    <textarea name="{{ $name }}" id="{{ $id }}" rows="{{ $field['type'] === 'lines' ? ($field['max'] ?? 3) : 3 }}" class="{{ $inputClass }}" @if(isset($field['help'])) aria-describedby="help_{{ $key }}" @endif>{{ $value }}</textarea>
+                                                @elseif(in_array($field['type'], ['textarea', 'lines', 'emails']))
+                                                    <textarea name="{{ $name }}" id="{{ $id }}" rows="{{ in_array($field['type'], ['lines', 'emails']) ? ($field['max'] ?? 3) : 3 }}" class="{{ $inputClass }} {{ $field['type'] === 'emails' ? 'font-monospace' : '' }}" @if(isset($field['help'])) aria-describedby="help_{{ $key }}" @endif @if($field['type'] === 'emails') placeholder="Support : support@immodigital.tech" @endif>{{ $value }}</textarea>
                                                 @else
                                                     <input type="{{ ['email' => 'email', 'url' => 'url', 'phone' => 'tel'][$field['type']] ?? 'text' }}" name="{{ $name }}" id="{{ $id }}" value="{{ $value }}"
                                                         class="{{ $inputClass }} {{ $field['type'] === 'link' ? 'font-monospace' : '' }}"

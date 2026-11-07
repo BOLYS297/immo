@@ -73,7 +73,7 @@ export async function getPage(slug: string, locale: Locale): Promise<CmsPage | n
 export type MenuLink = { label: string; url: string; newTab: boolean; display: 'all' | 'desktop' | 'mobile' };
 export type SiteData = {
   settings: Record<
-    'site_name' | 'site_slogan' | 'contact_email' | 'contact_phones' | 'contact_whatsapp' | 'contact_address'
+    'site_name' | 'site_slogan' | 'contact_email' | 'contact_emails' | 'contact_phones' | 'contact_whatsapp' | 'contact_address'
     | 'social_linkedin' | 'social_facebook' | 'social_instagram' | 'social_x' | 'social_youtube'
     | 'header_cta_label' | 'header_cta_url' | 'seo_title' | 'seo_description' | 'logo_animation',
     string | null
