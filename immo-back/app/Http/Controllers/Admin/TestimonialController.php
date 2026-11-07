@@ -57,8 +57,6 @@ class TestimonialController extends Controller
         $locales = array_keys(config('cms.locales'));
         $rules = [
             'client_name' => ['required', 'string', 'max:80'],
-            'role' => ['nullable', 'string', 'max:80'],
-            'company' => ['nullable', 'string', 'max:80'],
             // Pôle = service ; une ancienne valeur libre reste acceptée tant qu'elle n'est pas changée.
             'pole' => ['nullable', 'string', 'max:80', Rule::in([...array_keys(Poles::options()), ...array_filter([$request->route('testimonial')?->pole])])],
             'photo_id' => ['nullable', 'integer', 'exists:media,id'],
@@ -69,6 +67,8 @@ class TestimonialController extends Controller
         foreach ($locales as $locale) {
             $rules["content.{$locale}"] = [$locale === $default ? 'required' : 'nullable', 'string', 'max:800'];
             $rules["metric.{$locale}"] = ['nullable', 'string', 'max:120'];
+            $rules["role.{$locale}"] = ['nullable', 'string', 'max:80'];
+            $rules["company.{$locale}"] = ['nullable', 'string', 'max:80'];
         }
 
         $validated = $request->validate($rules, [], ["content.{$default}" => 'citation (FR)']);
@@ -79,8 +79,8 @@ class TestimonialController extends Controller
 
         return [
             'client_name' => trim($validated['client_name']),
-            'role' => $text('role'),
-            'company' => $text('company'),
+            'role' => $translations('role'),
+            'company' => $translations('company'),
             'pole' => $text('pole'),
             'photo_id' => $validated['photo_id'] ?? null,
             'content' => $translations('content'),

@@ -70,6 +70,23 @@ class SiteSettingsTest extends TestCase
         Http::assertSent(fn (Request $r) => $r->url() === 'http://front.test/api/revalidate' && $r['tags'] === ['site']);
     }
 
+    public function test_company_emails_take_an_optional_label_per_line(): void
+    {
+        $this->actingAs($this->admin)->get(route('admin.settings.index'))->assertOk()->assertSee('E-mails de l&#039;entreprise', false);
+
+        $this->actingAs($this->admin)->post(route('admin.settings.update'), $this->settings([
+            'contact_emails' => ['fr' => " Support : support@example.com \r\n\r\nventes@example.com", 'en' => 'Support: support@example.com'],
+        ]))->assertSessionHasNoErrors();
+
+        $this->assertSame("Support : support@example.com\nventes@example.com", $this->getJson('/api/v1/site?locale=fr')->json('data.settings.contact_emails'));
+        $this->assertSame('Support: support@example.com', $this->getJson('/api/v1/site?locale=en')->json('data.settings.contact_emails'));
+
+        $this->actingAs($this->admin)->post(route('admin.settings.update'), $this->settings(['contact_emails' => ['fr' => "Support : pas-une-adresse", 'en' => '']]))
+            ->assertSessionHasErrors('settings.contact_emails.fr');
+        $this->actingAs($this->admin)->post(route('admin.settings.update'), $this->settings(['contact_emails' => ['fr' => implode("\n", array_map(fn ($i) => "a{$i}@example.com", range(1, 7))), 'en' => '']]))
+            ->assertSessionHasErrors('settings.contact_emails.fr');
+    }
+
     public function test_a_cleared_setting_stays_empty_instead_of_falling_back_to_its_default(): void
     {
         $this->actingAs($this->admin)->post(route('admin.settings.update'), $this->settings(['contact_phones' => '']))->assertSessionHasNoErrors();

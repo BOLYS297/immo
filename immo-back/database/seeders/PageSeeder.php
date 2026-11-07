@@ -116,8 +116,8 @@ class PageSeeder extends Seeder
                 'en' => ['title' => 'Follow your project in real time', 'text' => 'Your private space brings together progress, deliverables, invoices and support from the infrastructure team.', 'button' => 'Access your private space'],
             ],
             'cta_band' => [
-                'fr' => ['title' => 'Parlons de votre idée.', 'text' => 'Trente minutes avec un associé IMMO pour cadrer votre projet. Sans engagement.', 'primary' => 'Lancer un projet', 'primary_href' => '/contact', 'secondary' => 'Voir nos solutions', 'secondary_href' => '/services'],
-                'en' => ['title' => 'Let’s talk about your idea.', 'text' => 'Thirty minutes with an IMMO partner to scope your project. No commitment.', 'primary' => 'Start a project', 'primary_href' => '/contact', 'secondary' => 'See our solutions', 'secondary_href' => '/services'],
+                'fr' => ['title' => 'Parlons de votre idée.', 'text' => 'Trente minutes avec un associé IMMO pour cadrer votre projet. Sans engagement.', 'buttons' => [['label' => 'Lancer un projet', 'href' => '/contact'], ['label' => 'Voir nos solutions', 'href' => '/services']]],
+                'en' => ['title' => 'Let’s talk about your idea.', 'text' => 'Thirty minutes with an IMMO partner to scope your project. No commitment.', 'buttons' => [['label' => 'Start a project', 'href' => '/contact'], ['label' => 'See our solutions', 'href' => '/services']]],
             ],
         ];
 

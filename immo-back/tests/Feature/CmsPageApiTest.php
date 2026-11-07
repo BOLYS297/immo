@@ -37,7 +37,7 @@ class CmsPageApiTest extends TestCase
             ->assertJsonPath('data.sections.1.type', 'cta_band');
     }
 
-    public function test_empty_fields_fall_back_to_default_locale_without_mixing_list_items(): void
+    public function test_empty_fields_and_list_items_fall_back_to_the_default_locale_item_by_item(): void
     {
         $this->page->sections()->create(['type' => 'services', 'content' => [
             'fr' => ['title' => 'Ce que nous faisons', 'all' => 'Tout voir', 'rows' => [['title' => 'IA'], ['title' => 'Web']]],
@@ -49,7 +49,7 @@ class CmsPageApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.sections.0.content.title', 'Ce que nous faisons')
             ->assertJsonPath('data.sections.0.content.all', 'See all')
-            ->assertJsonPath('data.sections.0.content.rows', [['title' => 'AI']]);
+            ->assertJsonPath('data.sections.0.content.rows', [['title' => 'AI'], ['title' => 'Web']]); // ligne non traduite : version française
     }
 
     public function test_unknown_locale_uses_default_locale(): void

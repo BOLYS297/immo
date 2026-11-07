@@ -37,7 +37,7 @@
                             <td>
                                 <div class="text-white fw-bold fs-6">{{ $t->client_name }}</div>
                                 <div class="text-info" style="font-size: 0.75rem;">
-                                    {{ collect([$t->role, $t->company])->filter()->implode(', ') ?: 'Client' }}
+                                    {{ collect([$t->getTranslation('role', config('cms.default_locale')), $t->getTranslation('company', config('cms.default_locale'))])->filter()->implode(', ') ?: 'Client' }}
                                 </div>
                             </td>
                             <td>

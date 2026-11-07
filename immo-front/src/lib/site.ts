@@ -6,7 +6,8 @@ import type { MenuLink, SiteData } from '@/server/cms-api';
  * Les valeurs ci-dessous ne servent que si Laravel est injoignable : ce sont les mêmes que les valeurs
  * par défaut de immo-back/config/cms.php (settings) et de la migration des menus.
  */
-export type Contact = { email: string | null; phones: { label: string; href: string }[]; whatsappUrl: string | null; address: string[] };
+/** `emails` : autres adresses de l'entreprise (admin « E-mails de l'entreprise »), avec un libellé facultatif. */
+export type Contact = { email: string | null; emails: { label: string | null; address: string }[]; phones: { label: string; href: string }[]; whatsappUrl: string | null; address: string[] };
 export type SocialKey = 'linkedin' | 'facebook' | 'instagram' | 'x' | 'youtube';
 export type SiteView = {
   name: string;
@@ -25,11 +26,17 @@ export type SiteView = {
 const SOCIAL: SocialKey[] = ['linkedin', 'facebook', 'instagram', 'x', 'youtube'];
 const lines = (v: string | null) => (v ?? '').split('\n').map((l) => l.trim()).filter(Boolean);
 const digits = (v: string) => v.replace(/[^\d+]/g, '');
+// « Support : support@immodigital.tech » ou « support@immodigital.tech » (format validé par Laravel).
+const emailLine = (line: string) => {
+  const m = /^(?:(.{1,40}?)\s*:\s*)?([^\s:]+@[^\s:]+)$/u.exec(line);
+  return m ? [{ label: m[1]?.trim() || null, address: m[2] }] : [];
+};
 
 export function contactFrom(s: SiteData['settings']): Contact {
   const wa = s.contact_whatsapp ? digits(s.contact_whatsapp).replace(/^\+/, '') : '';
   return {
     email: s.contact_email,
+    emails: lines(s.contact_emails ?? null).flatMap(emailLine),
     phones: lines(s.contact_phones).map((label) => ({ label, href: digits(label) })),
     whatsappUrl: wa ? `https://wa.me/${wa}` : null,
     address: lines(s.contact_address),
@@ -57,7 +64,7 @@ export function fallbackSite(t: Dict): SiteData {
   const link = (url: string, label: string, display: MenuLink['display'] = 'all'): MenuLink => ({ label, url, newTab: false, display });
   return {
     settings: {
-      site_name: 'IMMO Digital', site_slogan: t.footer.slogan, contact_email: null,
+      site_name: 'IMMO Digital', site_slogan: t.footer.slogan, contact_email: null, contact_emails: null,
       contact_phones: '+237 678 261 382\n+237 694 072 875', contact_whatsapp: '+237 678 261 382', contact_address: t.footer.address.join('\n'),
       social_linkedin: null, social_facebook: null, social_instagram: null, social_x: null, social_youtube: null,
       header_cta_label: t.nav.cta, header_cta_url: '/contact', seo_title: t.meta.title, seo_description: t.meta.description, logo_animation: 'auto',

@@ -25,8 +25,8 @@ class Testimonial extends Model
         'sort_order',
     ];
 
-    /** content = citation, metric = résultat mesuré (facultatif). */
-    public array $translatable = ['content', 'metric'];
+    /** content = citation, metric = résultat mesuré (facultatif), role = fonction, company = entreprise. */
+    public array $translatable = ['content', 'metric', 'role', 'company'];
 
     protected function casts(): array
     {

@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { BrainCircuit, Code2, PenTool, ServerCog, type LucideIcon } from 'lucide-react';
 import type { BlockContent } from '@/lib/blocks';
 import { getDict } from '@/lib/locale';
+import { ButtonRow, buttonsOf } from '@/components/blocks/Buttons';
 
 /**
  * Blocs de la page À propos (about_intro, team, commitments). Un champ vide reprend le texte du dictionnaire.
@@ -82,7 +82,7 @@ export function Commitments({ id, content: c = {} }: { id: string; content?: Blo
             </li>
           ))}
         </ul>
-        {button && <Link href={c.href || '/contact'} className="mt-12 inline-block rounded-full bg-immo-cyan px-7 py-3.5 font-semibold text-immo-dark transition-colors hover:bg-immo-sky">{button}</Link>}
+        <ButtonRow buttons={buttonsOf(c.buttons, { label: button, href: c.href || '/contact' })} className="mt-12" />
       </div>
     </section>
   );

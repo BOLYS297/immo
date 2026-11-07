@@ -21,6 +21,7 @@
         <p class="text-secondary small mb-4">
             <i class="bi bi-info-circle me-1"></i>
             Un champ laissé vide reprend la version {{ $locales[$default] }}, puis le texte par défaut du site.
+            Dans les autres langues, chaque liste reprend les éléments {{ Str::lower($locales[$default]) }} un par un : le texte d'origine s'affiche en gris dans chaque champ à traduire.
             Les textes d'interface (boutons de formulaire, messages d'erreur…) restent gérés dans le code du front.
         </p>
 
@@ -74,30 +75,26 @@
             <div class="tab-content mb-4">
                 @foreach($locales as $locale => $localeName)
                     @php($saved = $section->contentFor($locale))
+                    {{-- Autre langue : la version par défaut sert de modèle (textes en indication, listes alignées). --}}
+                    @php($source = $locale === $default ? null : $section->contentFor($default))
                     <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="content-{{ $locale }}" role="tabpanel">
                         @foreach($block['fields'] as $key => $field)
                             @if($field['type'] === 'repeater')
-                                @php($items = old("content.$locale.$key", $saved[$key] ?? []))
-                                <fieldset class="mb-4" data-repeater data-max="{{ $field['max'] ?? 12 }}">
-                                    <legend class="form-label text-white small fw-semibold mb-2">{{ $field['label'] }}</legend>
-                                    <div data-repeater-items>
-                                        @foreach(array_values(is_array($items) ? $items : []) as $index => $item)
-                                            @include('admin.pages.sections._repeater-item', ['index' => $index, 'item' => $item])
-                                        @endforeach
-                                    </div>
-                                    <template data-repeater-template>
-                                        @include('admin.pages.sections._repeater-item', ['index' => '__INDEX__', 'item' => []])
-                                    </template>
-                                    <button type="button" class="btn btn-sm btn-outline-info" data-repeater-add>
-                                        <i class="bi bi-plus-lg me-1"></i>Ajouter : {{ Str::lower($field['item_label']) }}
-                                    </button>
-                                </fieldset>
+                                @include('admin.pages.sections._repeater', [
+                                    'name' => "content[$locale][$key]",
+                                    'id' => "content_{$locale}_{$key}",
+                                    'items' => old("content.$locale.$key", $saved[$key] ?? []),
+                                    'sourceItems' => $source === null ? null : (is_array($source[$key] ?? null) ? $source[$key] : []),
+                                    'syncKey' => $key,
+                                    'depth' => 0,
+                                ])
                             @else
                                 <div class="mb-3">
                                     @include('admin.pages.sections._field', [
                                         'name' => "content[$locale][$key]",
                                         'id' => "content_{$locale}_{$key}",
                                         'value' => old("content.$locale.$key", $saved[$key] ?? ''),
+                                        'source' => $source === null ? null : ($source[$key] ?? ''),
                                     ])
                                 </div>
                             @endif
@@ -220,42 +217,66 @@
             // Ajout, suppression et déplacement d'éléments d'une liste
             form.addEventListener('click', (e) => { if (e.target.closest('[data-repeater-add], [data-repeater-remove], [data-repeater-up], [data-repeater-down], [data-media-clear]')) schedule(); });
         })();
-        // Listes répétables : ajout (depuis le <template>), suppression et réordonnancement.
+        // Listes répétables, éventuellement imbriquées (boutons d'une carte) : ajout depuis le <template> de la
+        // liste, suppression et réordonnancement. Chaque niveau a son marqueur d'index (data-placeholder).
         // L'ordre du DOM est l'ordre enregistré : le serveur réindexe les éléments.
-        document.querySelectorAll('[data-repeater]').forEach((repeater) => {
-            const items = repeater.querySelector('[data-repeater-items]');
-            const template = repeater.querySelector('[data-repeater-template]');
-            const add = repeater.querySelector('[data-repeater-add]');
-            const max = Number(repeater.dataset.max);
-            let next = items.children.length;
-
-            const refresh = () => {
-                [...items.children].forEach((item, i) => {
-                    item.querySelector('[data-repeater-number]').textContent = i + 1;
-                    item.querySelector('[data-repeater-up]').disabled = i === 0;
-                    item.querySelector('[data-repeater-down]').disabled = i === items.children.length - 1;
+        (() => {
+            let next = 0;
+            const own = (repeater, selector) => repeater.querySelector(`:scope > ${selector}`);
+            const refresh = (repeater) => {
+                const items = [...own(repeater, '[data-repeater-items]').children];
+                // Les éléments traduits d'une liste de la langue par défaut n'ont ni flèches ni « Retirer » (data-repeater-mirror).
+                const movable = items.filter((item) => !item.hasAttribute('data-repeater-mirror'));
+                items.forEach((item, i) => {
+                    const head = item.firstElementChild;
+                    head.querySelector('[data-repeater-number]').textContent = i + 1;
+                    const j = movable.indexOf(item);
+                    if (j === -1) return;
+                    head.querySelector('[data-repeater-up]').disabled = j === 0;
+                    head.querySelector('[data-repeater-down]').disabled = j === movable.length - 1;
                 });
-                add.disabled = items.children.length >= max;
+                own(repeater, '[data-repeater-add]').disabled = items.length >= Number(repeater.dataset.max);
             };
 
-            add.addEventListener('click', () => {
-                const html = template.innerHTML.replaceAll('__INDEX__', 'n' + next++);
-                items.insertAdjacentHTML('beforeend', html);
-                refresh();
-                items.lastElementChild.querySelector('input, textarea')?.focus();
-            });
-
-            items.addEventListener('click', (event) => {
-                const item = event.target.closest('[data-repeater-item]');
+            document.addEventListener('click', (event) => {
+                const add = event.target.closest('[data-repeater-add]');
+                if (add) {
+                    const repeater = add.closest('[data-repeater]');
+                    const items = own(repeater, '[data-repeater-items]');
+                    const html = own(repeater, '[data-repeater-template]').innerHTML.replaceAll(repeater.dataset.placeholder, 'n' + next++);
+                    items.insertAdjacentHTML('beforeend', html);
+                    items.lastElementChild.querySelectorAll('[data-repeater]').forEach(refresh);
+                    refresh(repeater);
+                    items.lastElementChild.querySelector('input:not([type=hidden]), textarea, select')?.focus();
+                    return;
+                }
+                const control = event.target.closest('[data-repeater-remove], [data-repeater-up], [data-repeater-down]');
+                const item = control?.closest('[data-repeater-item]');
                 if (!item) return;
-                if (event.target.closest('[data-repeater-remove]')) item.remove();
-                else if (event.target.closest('[data-repeater-up]')) item.previousElementSibling?.before(item);
-                else if (event.target.closest('[data-repeater-down]')) item.nextElementSibling?.after(item);
-                else return;
-                refresh();
+                const repeater = item.parentElement.closest('[data-repeater]');
+                const sibling = (el, dir) => { let s = el[dir]; while (s?.hasAttribute('data-repeater-mirror')) s = s[dir]; return s; };
+                // `plain` : traduction suivant l'original, échangée avec sa voisine immédiate.
+                const apply = (el, plain = false) => {
+                    const step = (dir) => (plain ? el[dir] : sibling(el, dir));
+                    if (control.matches('[data-repeater-remove]')) el.remove();
+                    else if (control.matches('[data-repeater-up]')) step('previousElementSibling')?.before(el);
+                    else step('nextElementSibling')?.after(el);
+                };
+                // Langue par défaut : la même opération s'applique à la traduction de même rang dans les autres langues.
+                const index = [...item.parentElement.children].indexOf(item);
+                const translations = repeater.dataset.sync && !repeater.hasAttribute('data-translation')
+                    ? [...document.querySelectorAll(`[data-repeater][data-translation][data-sync="${repeater.dataset.sync}"]`)] : [];
+                apply(item);
+                refresh(repeater);
+                translations.forEach((target) => {
+                    const twin = own(target, '[data-repeater-items]').children[index];
+                    if (!twin?.hasAttribute('data-repeater-mirror')) return;
+                    apply(twin, true);
+                    refresh(target);
+                });
             });
 
-            refresh();
-        });
+            document.querySelectorAll('[data-repeater]').forEach(refresh);
+        })();
     </script>
 @endpush

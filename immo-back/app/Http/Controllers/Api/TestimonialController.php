@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 /** Avis publiés du mur /recommandations. Contrat lu par immo-front/src/server/cms-api.ts (type TestimonialView). */
 class TestimonialController extends Controller
 {
-    /** GET /api/v1/testimonials?locale=fr — citation et résultat dans la langue demandée, sinon en français. */
+    /** GET /api/v1/testimonials?locale=fr — citation, résultat, fonction et entreprise dans la langue demandée, sinon en français. */
     public function index(Request $request): JsonResponse
     {
         $locale = $request->query('locale');
@@ -20,8 +20,8 @@ class TestimonialController extends Controller
         $items = Testimonial::published()->with('photo')->orderBy('id')->get()->map(fn (Testimonial $t) => [
             'id' => (string) $t->id,
             'name' => $t->client_name,
-            'role' => (string) $t->role,
-            'company' => (string) $t->company,
+            'role' => (string) $t->getTranslation('role', $locale),
+            'company' => (string) $t->getTranslation('company', $locale),
             'pole' => (string) Poles::label($t->pole, $locale),
             'quote' => (string) $t->getTranslation('content', $locale),
             'metric' => (string) $t->getTranslation('metric', $locale),

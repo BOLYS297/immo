@@ -70,15 +70,21 @@ class SectionLookTest extends TestCase
 
         $this->actingAs($this->admin)->put(route('admin.sections.update', $section), [
             'is_visible' => '1',
-            'content' => ['fr' => ['title' => 'L’équipe', 'members' => [['photo' => (string) $this->media->id, 'name' => 'Awa', 'role' => 'IA & Data', 'bio' => 'Associée', 'link' => 'https://www.linkedin.com/in/awa']]]],
+            'content' => ['fr' => ['title' => 'L’équipe', 'members' => [['photo' => (string) $this->media->id, 'name' => 'Awa', 'role' => 'IA & Data', 'bio' => 'Associée', 'socials' => [
+                ['network' => 'linkedin', 'url' => 'https://www.linkedin.com/in/awa'],
+                ['network' => 'tiktok', 'url' => 'https://www.tiktok.com/@awa'],
+                ['network' => 'x', 'url' => ''], // sans adresse : ignoré
+            ]]]]],
             'settings' => ['columns' => '3', 'photo_shape' => 'square'],
         ])->assertSessionHasNoErrors();
 
         $this->page->publish();
         $member = $this->getJson('/api/v1/pages/offre')->json('data.sections.0.content.members.0');
         $this->assertSame(['Awa', $this->media->id], [$member['name'], $member['photo']['id']]);
+        $this->assertEquals([['network' => 'linkedin', 'url' => 'https://www.linkedin.com/in/awa'], ['network' => 'tiktok', 'url' => 'https://www.tiktok.com/@awa']], $member['socials']);
 
-        $this->actingAs($this->admin)->put(route('admin.sections.update', $section), ['is_visible' => '1', 'content' => ['fr' => ['members' => [['name' => 'X', 'link' => 'javascript:alert(1)']]]]])->assertSessionHasErrors();
+        $this->actingAs($this->admin)->put(route('admin.sections.update', $section), ['is_visible' => '1', 'content' => ['fr' => ['members' => [['name' => 'X', 'socials' => [['network' => 'linkedin', 'url' => 'javascript:alert(1)']]]]]]])->assertSessionHasErrors('content.fr.members.0.socials.0.url');
+        $this->actingAs($this->admin)->put(route('admin.sections.update', $section), ['is_visible' => '1', 'content' => ['fr' => ['members' => [['name' => 'X', 'socials' => [['network' => 'myspace', 'url' => 'https://myspace.com/x']]]]]]])->assertSessionHasErrors('content.fr.members.0.socials.0.network');
     }
 
     public function test_an_ordinary_page_can_be_deleted_from_its_edit_screen(): void

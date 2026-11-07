@@ -43,22 +43,34 @@
                 "title": "IA & Automatisation de processus",
                 "benefit": "Automatiser les tâches répétitives, interconnecter vos outils et gagner du temps.",
                 "deliverables": "Workflows n8n complexes\nAgents conversationnels métier (RAG/LLM)\nAutomatisation CRM, facturation et emails",
-                "cta": "Auditer vos flux de travail",
-                "href": "/services?domaine=ia#chiffrage"
+                "buttons": [
+                  {
+                    "label": "Auditer vos flux de travail",
+                    "href": "/services?domaine=ia#chiffrage"
+                  }
+                ]
               },
               {
                 "title": "Développement Web & Mobile (UI/UX inclus)",
                 "benefit": "Créer une application rapide, sécurisée, élégante et sur mesure.",
                 "deliverables": "Design system et maquettes Figma\nApplications Web/PWA en Next.js\nApps mobiles iOS/Android (React Native)\nAPI scalables",
-                "cta": "Concevoir votre application",
-                "href": "/services?domaine=web#chiffrage"
+                "buttons": [
+                  {
+                    "label": "Concevoir votre application",
+                    "href": "/services?domaine=web#chiffrage"
+                  }
+                ]
               },
               {
                 "title": "Infrastructure, Cloud & Sécurité réseau",
                 "benefit": "Viser zéro interruption, protéger les données sensibles et concevoir pour la haute disponibilité.",
                 "deliverables": "Conteneurisation Docker/K8s\nArchitectures cloud haute disponibilité (objectif de disponibilité défini au contrat)\nAudits de sécurité réseau\nPlans de reprise d’activité (PRA)",
-                "cta": "Sécuriser vos systèmes",
-                "href": "/services?domaine=infra#chiffrage"
+                "buttons": [
+                  {
+                    "label": "Sécuriser vos systèmes",
+                    "href": "/services?domaine=infra#chiffrage"
+                  }
+                ]
               }
             ]
           },
@@ -70,22 +82,34 @@
                 "title": "AI & Process Automation",
                 "benefit": "Automate repetitive tasks, connect your tools and save time.",
                 "deliverables": "Advanced n8n workflows\nBusiness conversational agents (RAG/LLM)\nCRM, invoicing and email automation",
-                "cta": "Audit your workflows",
-                "href": "/services?domaine=ia#chiffrage"
+                "buttons": [
+                  {
+                    "label": "Audit your workflows",
+                    "href": "/services?domaine=ia#chiffrage"
+                  }
+                ]
               },
               {
                 "title": "Web & Mobile Development (UI/UX included)",
                 "benefit": "Build a fast, secure, elegant, tailor-made application.",
                 "deliverables": "Design system and Figma mockups\nWeb/PWA applications in Next.js\niOS/Android mobile apps (React Native)\nScalable APIs",
-                "cta": "Design your application",
-                "href": "/services?domaine=web#chiffrage"
+                "buttons": [
+                  {
+                    "label": "Design your application",
+                    "href": "/services?domaine=web#chiffrage"
+                  }
+                ]
               },
               {
                 "title": "Infrastructure, Cloud & Network Security",
                 "benefit": "Aim for zero interruption, protect sensitive data and design for high availability.",
                 "deliverables": "Docker/K8s containerisation\nHigh-availability cloud architectures (availability target set in the contract)\nNetwork security audits\nDisaster recovery plans (DRP)",
-                "cta": "Secure your systems",
-                "href": "/services?domaine=infra#chiffrage"
+                "buttons": [
+                  {
+                    "label": "Secure your systems",
+                    "href": "/services?domaine=infra#chiffrage"
+                  }
+                ]
               }
             ]
           }
@@ -366,8 +390,12 @@
                 "text": "Chaque client est un véritable partenaire : l’écoute et l’échange sont au cœur de chaque projet."
               }
             ],
-            "button": "Rencontrer l’équipe",
-            "href": "/contact"
+            "buttons": [
+              {
+                "label": "Rencontrer l’équipe",
+                "href": "/contact"
+              }
+            ]
           },
           "en": {
             "title": "Our commitments",
@@ -390,8 +418,12 @@
                 "text": "Every client is a true partner: listening and dialogue are at the heart of every project."
               }
             ],
-            "button": "Meet the team",
-            "href": "/contact"
+            "buttons": [
+              {
+                "label": "Meet the team",
+                "href": "/contact"
+              }
+            ]
           }
         }
       }
@@ -492,14 +524,22 @@
           "fr": {
             "title": "Notre règle de publication",
             "text": "Nous publions uniquement les avis de clients dont nous avons livré le projet, avec leur accord écrit. Aucun avis n’est rédigé ni modifié par notre équipe.",
-            "link_label": "Lancer votre projet",
-            "href": "/contact"
+            "buttons": [
+              {
+                "label": "Lancer votre projet",
+                "href": "/contact"
+              }
+            ]
           },
           "en": {
             "title": "Our publishing rule",
             "text": "We only publish reviews from clients whose project we have delivered, with their written consent. No review is written or edited by our team.",
-            "link_label": "Start your project",
-            "href": "/contact"
+            "buttons": [
+              {
+                "label": "Start your project",
+                "href": "/contact"
+              }
+            ]
           }
         }
       }
