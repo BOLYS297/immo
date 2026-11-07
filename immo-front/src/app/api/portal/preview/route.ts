@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import type { PortalUser } from '@/lib/portal-types';
 import { startSession } from '@/server/auth';
 import { cmsForm } from '@/server/cms-api';
+import { siteUrl } from '@/server/site-url';
 
 /**
  * Aperçu du portail ouvert depuis l'admin Laravel (Clients → Aperçu du portail).
@@ -10,7 +11,7 @@ import { cmsForm } from '@/server/cms-api';
 export async function GET(req: Request) {
   const code = new URL(req.url).searchParams.get('code') ?? '';
   const { status, data } = await cmsForm<{ token?: string; user?: PortalUser }>('POST', '/portal/preview', { body: { code } });
-  if (status !== 200 || !data?.token || !data.user) return NextResponse.redirect(new URL('/connexion', req.url));
+  if (status !== 200 || !data?.token || !data.user) return NextResponse.redirect(siteUrl('/connexion', req));
   await startSession({ id: data.user.id, role: 'client', email: data.user.email, token: data.token, preview: true }, 1800);
-  return NextResponse.redirect(new URL('/dashboard', req.url));
+  return NextResponse.redirect(siteUrl('/dashboard', req));
 }

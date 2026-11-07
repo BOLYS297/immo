@@ -104,7 +104,7 @@ export const pagesEn: PagesDict = {
     note: 'Demo mode: data is sample data. Secure login (Supabase Auth) will be plugged in here.',
     tablist: 'Portal modules', tabs: ['Project tracking', 'Deliverables', 'Billing & signature', 'Support & tickets', 'My account'],
     welcome: 'Hello {name}', signOut: 'Sign out', empty: 'Nothing to show yet.', openLink: 'Open', message: 'Message', reply: 'Team reply', signedOn: 'Signed on {date}',
-    preview: 'Admin preview: you are viewing {name}’s portal.', ticketFailed: 'The ticket could not be sent.', signFailed: 'Signing failed. Please try again.',
+    preview: 'Admin preview: you are viewing {name}’s portal.', exitPreview: 'Exit preview', ticketFailed: 'The ticket could not be sent.', signFailed: 'Signing failed. Please try again.',
     account: { title: 'My account', current: 'Current password', next: 'New password (10 characters minimum)', save: 'Change password', saved: 'Password updated.', wrong: 'Current password is incorrect.', invalid: 'The new password must be at least 10 characters.' },
     kanban: {
       milestones: 'Project milestones', board: 'Sprint board', progress: 'Progress: ',

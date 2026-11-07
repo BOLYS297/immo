@@ -9,7 +9,10 @@ export function generateMetadata(): Metadata {
 }
 
 export default async function ConnexionPage() {
-  if (await getClientSession()) redirect('/dashboard');
+  // Seul un client réellement connecté repart vers son espace. Une session d'aperçu ouverte depuis l'admin
+  // (lecture seule, 30 min) laisse le formulaire affiché : se connecter la remplace.
+  const session = await getClientSession();
+  if (session && !session.preview) redirect('/dashboard');
   const p = getDict().pages.portalLogin;
   return (
     <main id="contenu" className="px-6 py-24">

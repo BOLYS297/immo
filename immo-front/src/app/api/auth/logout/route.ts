@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { endSession, getSession } from '@/server/auth';
 import { cmsForm } from '@/server/cms-api';
+import { siteUrl } from '@/server/site-url';
 
 /** Déconnexion : le jeton Laravel du client est révoqué, puis le cookie supprimé. */
 export async function POST() {
@@ -13,5 +14,5 @@ export async function POST() {
 /** Session expirée ou révoquée côté Laravel : supprime le cookie puis renvoie vers la page de connexion. */
 export function GET(req: Request) {
   endSession();
-  return NextResponse.redirect(new URL('/connexion', req.url));
+  return NextResponse.redirect(siteUrl('/connexion', req));
 }
