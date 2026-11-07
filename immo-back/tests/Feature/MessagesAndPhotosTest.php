@@ -62,7 +62,7 @@ class MessagesAndPhotosTest extends TestCase
         $media = Media::latest('id')->firstOrFail();
 
         $this->actingAs($this->admin)->post(route('admin.testimonials.store'), [
-            'client_name' => 'Client réel', 'role' => 'DG', 'company' => 'Société', 'photo_id' => $media->id,
+            'client_name' => 'Client réel', 'role' => ['fr' => 'DG'], 'company' => ['fr' => 'Société'], 'photo_id' => $media->id,
             'content' => ['fr' => 'Très bon accompagnement.', 'en' => ''], 'rating' => 5, 'is_published' => '1',
         ])->assertSessionHasNoErrors();
 

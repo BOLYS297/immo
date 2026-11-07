@@ -21,6 +21,7 @@
         <p class="text-secondary small mb-4">
             <i class="bi bi-info-circle me-1"></i>
             Un champ laissé vide reprend la version {{ $locales[$default] }}, puis le texte par défaut du site.
+            Dans les autres langues, chaque liste reprend les éléments {{ Str::lower($locales[$default]) }} un par un : le texte d'origine s'affiche en gris dans chaque champ à traduire.
             Les textes d'interface (boutons de formulaire, messages d'erreur…) restent gérés dans le code du front.
         </p>
 
@@ -73,6 +74,8 @@
             <div class="tab-content mb-4">
                 @foreach($locales as $locale => $localeName)
                     @php($saved = $section->contentFor($locale))
+                    {{-- Autre langue : la version par défaut sert de modèle (textes en indication, listes alignées). --}}
+                    @php($source = $locale === $default ? null : $section->contentFor($default))
                     <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="content-{{ $locale }}" role="tabpanel">
                         @foreach($block['fields'] as $key => $field)
                             @if($field['type'] === 'repeater')
@@ -80,6 +83,8 @@
                                     'name' => "content[$locale][$key]",
                                     'id' => "content_{$locale}_{$key}",
                                     'items' => old("content.$locale.$key", $saved[$key] ?? []),
+                                    'sourceItems' => $source === null ? null : (is_array($source[$key] ?? null) ? $source[$key] : []),
+                                    'syncKey' => $key,
                                     'depth' => 0,
                                 ])
                             @else
@@ -88,6 +93,7 @@
                                         'name' => "content[$locale][$key]",
                                         'id' => "content_{$locale}_{$key}",
                                         'value' => old("content.$locale.$key", $saved[$key] ?? ''),
+                                        'source' => $source === null ? null : ($source[$key] ?? ''),
                                     ])
                                 </div>
                             @endif
@@ -218,11 +224,15 @@
             const own = (repeater, selector) => repeater.querySelector(`:scope > ${selector}`);
             const refresh = (repeater) => {
                 const items = [...own(repeater, '[data-repeater-items]').children];
+                // Les éléments traduits d'une liste de la langue par défaut n'ont ni flèches ni « Retirer » (data-repeater-mirror).
+                const movable = items.filter((item) => !item.hasAttribute('data-repeater-mirror'));
                 items.forEach((item, i) => {
                     const head = item.firstElementChild;
                     head.querySelector('[data-repeater-number]').textContent = i + 1;
-                    head.querySelector('[data-repeater-up]').disabled = i === 0;
-                    head.querySelector('[data-repeater-down]').disabled = i === items.length - 1;
+                    const j = movable.indexOf(item);
+                    if (j === -1) return;
+                    head.querySelector('[data-repeater-up]').disabled = j === 0;
+                    head.querySelector('[data-repeater-down]').disabled = j === movable.length - 1;
                 });
                 own(repeater, '[data-repeater-add]').disabled = items.length >= Number(repeater.dataset.max);
             };
@@ -243,10 +253,26 @@
                 const item = control?.closest('[data-repeater-item]');
                 if (!item) return;
                 const repeater = item.parentElement.closest('[data-repeater]');
-                if (control.matches('[data-repeater-remove]')) item.remove();
-                else if (control.matches('[data-repeater-up]')) item.previousElementSibling?.before(item);
-                else item.nextElementSibling?.after(item);
+                const sibling = (el, dir) => { let s = el[dir]; while (s?.hasAttribute('data-repeater-mirror')) s = s[dir]; return s; };
+                // `plain` : traduction suivant l'original, échangée avec sa voisine immédiate.
+                const apply = (el, plain = false) => {
+                    const step = (dir) => (plain ? el[dir] : sibling(el, dir));
+                    if (control.matches('[data-repeater-remove]')) el.remove();
+                    else if (control.matches('[data-repeater-up]')) step('previousElementSibling')?.before(el);
+                    else step('nextElementSibling')?.after(el);
+                };
+                // Langue par défaut : la même opération s'applique à la traduction de même rang dans les autres langues.
+                const index = [...item.parentElement.children].indexOf(item);
+                const translations = repeater.dataset.sync && !repeater.hasAttribute('data-translation')
+                    ? [...document.querySelectorAll(`[data-repeater][data-translation][data-sync="${repeater.dataset.sync}"]`)] : [];
+                apply(item);
                 refresh(repeater);
+                translations.forEach((target) => {
+                    const twin = own(target, '[data-repeater-items]').children[index];
+                    if (!twin?.hasAttribute('data-repeater-mirror')) return;
+                    apply(twin, true);
+                    refresh(target);
+                });
             });
 
             document.querySelectorAll('[data-repeater]').forEach(refresh);

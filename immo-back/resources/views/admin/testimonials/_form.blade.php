@@ -16,14 +16,6 @@
         <label for="pole" class="form-label text-white small fw-semibold">Pôle concerné</label>
         <input type="text" name="pole" id="pole" class="{{ $inputClass }}" value="{{ old('pole', $testimonial->pole) }}" maxlength="40" placeholder="IA & Data, Fullstack, Infra…">
     </div>
-    <div class="col-md-6">
-        <label for="role" class="form-label text-white small fw-semibold">Fonction</label>
-        <input type="text" name="role" id="role" class="{{ $inputClass }}" value="{{ old('role', $testimonial->role) }}" maxlength="80">
-    </div>
-    <div class="col-md-6">
-        <label for="company" class="form-label text-white small fw-semibold">Entreprise</label>
-        <input type="text" name="company" id="company" class="{{ $inputClass }}" value="{{ old('company', $testimonial->company) }}" maxlength="80">
-    </div>
     <div class="col-12">
         @include('admin.pages.sections._field', ['field' => ['type' => 'image', 'label' => 'Photo de la personne (carrée de préférence ; avec son accord)'], 'name' => 'photo_id', 'id' => 'photo_id', 'value' => old('photo_id', $testimonial->photo_id)])
     </div>
@@ -43,6 +35,16 @@
 <div class="tab-content mb-3">
     @foreach(config('cms.locales') as $locale => $name)
         <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="testimonial-{{ $locale }}" role="tabpanel">
+            <div class="row g-3 mb-3">
+                @foreach(['role' => 'Fonction', 'company' => 'Entreprise'] as $key => $label)
+                    <div class="col-md-6">
+                        <label for="{{ $key }}_{{ $locale }}" class="form-label text-white small fw-semibold">{{ $label }}</label>
+                        <input type="text" name="{{ $key }}[{{ $locale }}]" id="{{ $key }}_{{ $locale }}" class="{{ $inputClass }}" maxlength="80"
+                            value="{{ old("$key.$locale", $testimonial->getTranslation($key, $locale, false)) }}"
+                            @if($locale !== $default && filled($testimonial->getTranslation($key, $default, false))) placeholder="{{ $testimonial->getTranslation($key, $default, false) }}" @endif>
+                    </div>
+                @endforeach
+            </div>
             <div class="mb-3">
                 <label for="content_{{ $locale }}" class="form-label text-white small fw-semibold">Citation @if($locale === $default)<span class="text-danger">*</span>@endif</label>
                 <textarea name="content[{{ $locale }}]" id="content_{{ $locale }}" rows="4" class="{{ $inputClass }}" maxlength="800" @required($locale === $default)>{{ old("content.$locale", $testimonial->getTranslation('content', $locale, false)) }}</textarea>
