@@ -87,6 +87,8 @@ return new class extends Migration
         $keys = ['ia', 'web', 'infra'];
         $icons = ['workflow', 'app-window', 'shield-check'];
         $lines = fn (?string $text) => array_values(array_filter(array_map('trim', explode("\n", (string) $text)), 'strlen'));
+        // Libellé du bouton : ancien champ « cta », ou premier bouton de la liste « buttons » (format actuel du fichier).
+        $cta = fn (array $domain) => $domain['cta'] ?? ($domain['buttons'][0]['label'] ?? null);
 
         foreach ($fr as $i => $domain) {
             $other = $en[$i] ?? [];
@@ -95,7 +97,7 @@ return new class extends Migration
                 'slug' => $keys[$i] ?? 'service-'.($i + 1),
                 'short_description' => json_encode(['fr' => $domain['benefit'], 'en' => $other['benefit'] ?? null]),
                 'deliverables' => json_encode(['fr' => $lines($domain['deliverables'] ?? ''), 'en' => $lines($other['deliverables'] ?? '')]),
-                'cta_label' => json_encode(['fr' => $domain['cta'], 'en' => $other['cta'] ?? null]),
+                'cta_label' => json_encode(['fr' => $cta($domain), 'en' => $cta($other)]),
                 'quote_domain' => $keys[$i] ?? null,
                 'icon' => $icons[$i] ?? 'workflow',
                 'is_published' => true,
