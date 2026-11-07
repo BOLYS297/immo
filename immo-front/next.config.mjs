@@ -43,9 +43,9 @@ const nextConfig = {
   // Image Docker de production (deploy/front.Dockerfile) : serveur autonome sans node_modules complet.
   output: 'standalone',
   images: { remotePatterns: mediaPatterns },
-  // Les navigateurs et robots demandent /favicon.ico d'office : on sert l'icône du site plutôt qu'une 404.
+  // Les navigateurs et robots demandent /favicon.ico d'office : on sert l'icône d'onglet (symbole sans fond) plutôt qu'une 404.
   async rewrites() {
-    return [{ source: '/favicon.ico', destination: '/icons/icon-192.png' }];
+    return [{ source: '/favicon.ico', destination: '/icons/favicon.png' }];
   },
   async headers() {
     return [

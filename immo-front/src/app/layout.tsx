@@ -23,7 +23,8 @@ export async function generateMetadata(): Promise<Metadata> {
     description: seo.description,
     openGraph: { title: seo.title, description: seo.description, siteName: name, locale: t.meta.ogLocale, type: 'website', images: [DEFAULT_OG_IMAGE] },
     twitter: { card: 'summary_large_image', images: [DEFAULT_OG_IMAGE] },
-    icons: { apple: '/icons/apple-touch-icon.png' },
+    // Onglet : symbole seul sur fond transparent, identique à l'admin Laravel. L'icône Apple (écran d'accueil) garde son fond.
+    icons: { icon: [{ url: '/icons/favicon.png', type: 'image/png', sizes: '256x256' }], apple: '/icons/apple-touch-icon.png' },
     appleWebApp: { capable: true, title: 'IMMO', statusBarStyle: 'black-translucent' },
   };
 }
