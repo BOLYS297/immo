@@ -41,6 +41,17 @@ export async function cmsForm<T = unknown>(method: 'GET' | 'POST' | 'PUT', path:
   }
 }
 
+/** Fichier privé du portail (réponse brute de Laravel, avec le jeton du client) ; null si Laravel est injoignable. */
+export async function cmsFile(path: string, token: string): Promise<Response | null> {
+  if (!BASE || !process.env.CMS_API_KEY) return null;
+  try {
+    return await fetch(`${BASE}${path}`, { headers: { 'X-Front-Key': process.env.CMS_API_KEY, Authorization: `Bearer ${token}` }, cache: 'no-store', signal: AbortSignal.timeout(30000) });
+  } catch (e) {
+    console.error(`[cms] GET ${path} en échec :`, e instanceof Error ? e.message : e);
+    return null;
+  }
+}
+
 /** Erreur levée quand Laravel ne répond pas : la page d'erreur du site (« Réessayer ») s'affiche. */
 export class CmsUnavailable extends Error {}
 

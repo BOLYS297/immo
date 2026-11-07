@@ -52,6 +52,12 @@ class User extends Authenticatable
         return $this->hasMany(PortalItem::class);
     }
 
+    /** Projets du client dans le portail (tri : ClientProject::scopeNewestFirst). */
+    public function clientProjects()
+    {
+        return $this->hasMany(ClientProject::class);
+    }
+
     /** Rôle de l'équipe (config/admin.php), anciens noms ramenés à leur rôle actuel ; null pour un client ou un rôle inconnu. */
     public function staffRole(): ?string
     {

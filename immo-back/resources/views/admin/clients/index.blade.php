@@ -22,7 +22,7 @@
                     <tr class="text-secondary border-secondary border-opacity-25">
                         <th>Client</th>
                         <th>Email</th>
-                        <th>Éléments</th>
+                        <th>Projets</th>
                         <th>Statut</th>
                         <th class="text-end">Actions</th>
                     </tr>
@@ -37,7 +37,7 @@
                                 @endif
                             </td>
                             <td class="text-secondary">{{ $client->email }}</td>
-                            <td class="text-secondary">{{ $client->portal_items_count }}</td>
+                            <td class="text-secondary">{{ $client->client_projects_count }} <span class="opacity-75">· {{ $client->portal_items_count }} élément(s)</span></td>
                             <td>
                                 @if($client->is_active)
                                     <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25">Actif</span>
