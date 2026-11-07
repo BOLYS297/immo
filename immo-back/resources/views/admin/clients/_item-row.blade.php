@@ -6,7 +6,7 @@
     <div class="p-3 d-flex flex-wrap align-items-center gap-2 text-white small">
         <span class="fw-semibold">{{ $item->title }}</span>
         @foreach($definition['fields'] as $key => $field)
-            @if($field['type'] === 'select' && ! ($type === 'task' && $key === 'col'))
+            @if($field['type'] === 'select' && ! ($type === 'task' && $key === 'col') && filled($item->field($key)))
                 <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">{{ $field['options'][$item->field($key)] ?? $item->field($key) }}</span>
             @endif
         @endforeach

@@ -59,12 +59,13 @@ class PortalController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $this->client($request);
+        $locale = in_array($request->query('locale'), array_keys(config('cms.locales')), true) ? $request->query('locale') : config('cms.default_locale');
 
         return response()->json([
             'user' => $this->userPayload($user),
             'preview' => ! $request->user()->tokenCan('portal:write'),
             'projects' => $user->clientProjects()->newestFirst()->get()->map(fn (ClientProject $project) => $project->toPortalArray()),
-            'items' => $user->portalItems()->whereNotNull('client_project_id')->latest()->orderByDesc('id')->get()->map(fn (PortalItem $item) => $item->toPortalArray()),
+            'items' => $user->portalItems()->whereNotNull('client_project_id')->latest()->orderByDesc('id')->get()->map(fn (PortalItem $item) => $item->toPortalArray($locale)),
         ]);
     }
 

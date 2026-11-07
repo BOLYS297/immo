@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Page;
 use App\Models\PageSection;
+use App\Models\Service;
 use App\Models\Testimonial;
 use App\Services\FrontRevalidator;
 use Illuminate\Contracts\View\View;
@@ -68,7 +69,7 @@ class MediaController extends Controller
 
         // Le texte alternatif est envoyé avec les pages : vider le cache de celles qui utilisent l'image.
         // Version en ligne seulement : un brouillon n'est pas en cache.
-        FrontRevalidator::tags(...Page::publishedUsing($media->id)->map(fn (Page $page) => "page:{$page->slug}")->all(), ...(Testimonial::where('photo_id', $media->id)->exists() ? ['testimonials'] : []));
+        FrontRevalidator::tags(...Page::publishedUsing($media->id)->map(fn (Page $page) => "page:{$page->slug}")->all(), ...(Testimonial::where('photo_id', $media->id)->exists() ? ['testimonials'] : []), ...(Service::where('icon_media_id', $media->id)->exists() ? ['services'] : []));
 
         return back()->with('success', 'Texte alternatif enregistré.');
     }
@@ -79,6 +80,7 @@ class MediaController extends Controller
         $default = config('cms.default_locale');
         $where = $media->usages()->toBase()->map(fn (PageSection $s) => '« '.$s->page->getTranslation('title', $default).' » ('.($s->definition()['label'] ?? $s->type).')')
             ->merge(Testimonial::where('photo_id', $media->id)->get()->map(fn (Testimonial $t) => '« '.$t->client_name.' » (photo d\'un avis)'))
+            ->merge(Service::where('icon_media_id', $media->id)->get()->map(fn (Service $s) => '« '.$s->getTranslation('title', $default).' » (icône d\'un service)'))
             ->merge(Page::where('og_image_id', $media->id)->get()->map(fn (Page $page) => '« '.$page->getTranslation('title', $default).' » (image de partage)'))
             ->merge(Page::publishedUsing($media->id)->map(fn (Page $page) => '« '.$page->getTranslation('title', $default).' » (version en ligne)'))
             ->unique();

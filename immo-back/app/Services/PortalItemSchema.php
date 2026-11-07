@@ -15,9 +15,10 @@ use Illuminate\Validation\Rule;
  */
 class PortalItemSchema
 {
+    /** Champs du type, listes de pôles résolues (App\Services\Poles). */
     public static function fields(string $type): array
     {
-        return config("portal.types.{$type}.fields") ?? abort(404);
+        return array_map([Poles::class, 'resolve'], config("portal.types.{$type}.fields") ?? abort(404));
     }
 
     public static function rules(string $type): array

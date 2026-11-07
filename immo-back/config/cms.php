@@ -277,7 +277,8 @@ $config = [
             'settings' => [
                 'background' => $background,
                 'spacing' => $spacing,
-                'default_domain' => ['type' => 'select', 'label' => 'Pôle présélectionné', 'default' => 'ia', 'options' => ['ia' => 'IA & Automatisation', 'web' => 'Web & Mobile', 'infra' => 'Infra & Sécurité']],
+                // Pôles = services publiés (App\Services\Poles) ; un lien « ?domaine=… » l'emporte.
+                'default_domain' => ['type' => 'select', 'label' => 'Pôle présélectionné', 'default' => '', 'options' => 'poles', 'empty_label' => 'Premier pôle de la liste'],
             ],
         ],
 
@@ -433,11 +434,14 @@ $config = [
             'fields' => [
                 'title' => ['type' => 'text', 'label' => 'Titre'],
                 'all' => ['type' => 'text', 'label' => 'Libellé du lien « toutes nos solutions »'],
-                'rows' => ['type' => 'repeater', 'label' => 'Lignes', 'item_label' => 'Ligne', 'max' => 8, 'fields' => [
+                'rows' => ['type' => 'repeater', 'label' => 'Lignes (source « saisies ici »)', 'item_label' => 'Ligne', 'max' => 8, 'fields' => [
                     'title' => ['type' => 'text', 'label' => 'Titre'],
                     'text' => ['type' => 'textarea', 'label' => 'Texte'],
                     'href' => ['type' => 'link', 'label' => 'Lien'],
                 ]],
+            ],
+            'settings' => [
+                'source' => ['type' => 'select', 'label' => 'Lignes affichées', 'default' => 'manual', 'options' => ['manual' => 'Saisies dans ce bloc', 'services' => 'Services publiés (chaque service est un pôle)']],
             ],
         ],
 

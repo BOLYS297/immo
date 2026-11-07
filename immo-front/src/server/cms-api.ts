@@ -121,7 +121,8 @@ export type TestimonialView = { id: string; name: string; role: string; company:
 export const getTestimonials = async (locale: Locale) => (await cmsGet<TestimonialView[]>(`/testimonials?locale=${locale}`, ['testimonials'])) ?? [];
 
 /** Contenus structurés (immo-back Api/StructuredContentController.php). */
-export type ServiceView = { slug: string; title: string | null; description: string | null; deliverables: string[]; cta: string | null; domain: 'ia' | 'web' | 'infra' | null; icon: string };
+/** `domain` : pôle présélectionné par le bouton (le service lui-même) ; `icon` : nom Lucide ; `iconImage` : icône importée, prioritaire. */
+export type ServiceView = { slug: string; title: string | null; description: string | null; deliverables: string[]; cta: string | null; domain: string | null; icon: string; iconImage?: MediaImage | null };
 export type ProjectView = {
   slug: string; title: string | null; client: string | null; description: string | null; problem: string | null; solution: string | null; results: string | null;
   technologies: string[]; image: MediaImage | null; url: string | null; date: string | null; featured: boolean;

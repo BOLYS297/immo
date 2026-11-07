@@ -1,5 +1,3 @@
-export const NEED_KEYS = ['ia', 'web', 'infra'] as const;
-export type NeedKey = (typeof NEED_KEYS)[number];
 export const DEADLINE_KEYS = ['urgent', 'month', 'later'] as const;
 export type DeadlineKey = (typeof DEADLINE_KEYS)[number];
 

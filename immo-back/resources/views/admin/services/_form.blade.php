@@ -1,26 +1,36 @@
-{{-- Service bilingue, partagé par create et edit. Attend $service. --}}
+{{-- Service bilingue, partagé par create et edit. Attend $service. La page inclut admin.media._picker. Chaque service est un pôle. --}}
 @php($inputClass = 'form-control bg-dark text-light border-secondary border-opacity-25')
 @php($default = config('cms.default_locale'))
 
+{{-- Icône : nom d'une icône Lucide (bibliothèque du site) ou image importée, prioritaire. --}}
+@php($iconName = old('icon', $service->icon && ! str_starts_with($service->icon, 'bi-') ? $service->icon : 'workflow'))
+@php($frontUrl = rtrim((string) config('services.front.url'), '/'))
+<fieldset class="mb-4 p-3 rounded border border-secondary border-opacity-25">
+    <legend class="form-label text-white small fw-semibold float-none w-auto px-1 mb-0">Icône du pôle</legend>
+    <div class="row g-3 align-items-start">
+        <div class="col-md-6">
+            <label for="icon" class="form-label text-white small fw-semibold">Nom de l'icône</label>
+            <div class="d-flex align-items-center gap-3">
+                <input type="text" name="icon" id="icon" list="icon-presets" class="{{ $inputClass }} font-monospace" value="{{ $iconName }}" required maxlength="60"
+                    pattern="[a-z0-9]+(-[a-z0-9]+)*" aria-describedby="icon_help" data-icon-input data-icon-base="{{ $frontUrl }}/api/icons/">
+                <img src="{{ $frontUrl }}/api/icons/{{ $iconName }}" alt="" width="40" height="40" class="rounded bg-light p-1 flex-shrink-0" data-icon-preview>
+            </div>
+            <datalist id="icon-presets">
+                @foreach(config('cms.service_icons') as $key => $label)
+                    <option value="{{ $key }}">{{ $label }}</option>
+                @endforeach
+            </datalist>
+            <div id="icon_help" class="form-text text-secondary">
+                Une suggestion de la liste ou n'importe quelle icône de <a href="https://lucide.dev/icons/" target="_blank" rel="noopener" class="text-info">lucide.dev/icons</a> (nom en minuscules, ex. « brain-circuit »). L'aperçu se met à jour pendant la saisie.
+            </div>
+        </div>
+        <div class="col-md-6">
+            @include('admin.pages.sections._field', ['field' => ['type' => 'image', 'label' => 'Ou icône importée (PNG, WebP ; remplace le nom ci-contre)'], 'name' => 'icon_media_id', 'id' => 'icon_media_id', 'value' => old('icon_media_id', $service->icon_media_id)])
+        </div>
+    </div>
+</fieldset>
+
 <div class="row g-3 mb-4">
-    <div class="col-md-4">
-        <label for="icon" class="form-label text-white small fw-semibold">Icône</label>
-        <select name="icon" id="icon" class="form-select">
-            @foreach(config('cms.service_icons') as $key => $label)
-                <option value="{{ $key }}" @selected(old('icon', $service->icon) === $key)>{{ $label }}</option>
-            @endforeach
-        </select>
-    </div>
-    <div class="col-md-4">
-        <label for="quote_domain" class="form-label text-white small fw-semibold">Bouton : pôle présélectionné</label>
-        <select name="quote_domain" id="quote_domain" class="form-select" aria-describedby="quote_domain_help">
-            <option value="">— Aucun —</option>
-            @foreach(['ia' => 'IA & Automatisation', 'web' => 'Web & Mobile', 'infra' => 'Infra & Sécurité'] as $key => $label)
-                <option value="{{ $key }}" @selected(old('quote_domain', $service->quote_domain) === $key)>{{ $label }}</option>
-            @endforeach
-        </select>
-        <div id="quote_domain_help" class="form-text text-secondary">Le bouton mène au formulaire de chiffrage, pôle présélectionné.</div>
-    </div>
     <div class="col-md-2">
         <label for="sort_order" class="form-label text-white small fw-semibold">Ordre</label>
         <input type="number" name="sort_order" id="sort_order" min="0" max="999" class="{{ $inputClass }}" value="{{ old('sort_order', $service->sort_order) }}" required>

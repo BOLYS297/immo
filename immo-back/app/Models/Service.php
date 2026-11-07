@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\RecordsActivity;
 use App\Services\FrontRevalidator;
+use App\Services\Poles;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Translatable\HasTranslations;
 
@@ -24,6 +25,7 @@ class Service extends Model
         'cta_label',
         'quote_domain',
         'icon',
+        'icon_media_id',
         'is_published',
         'sort_order',
     ];
@@ -40,13 +42,25 @@ class Service extends Model
 
     protected static function booted(): void
     {
-        static::saved(fn () => FrontRevalidator::tags('services'));
-        static::deleted(fn () => FrontRevalidator::tags('services'));
+        static::saved(function () {
+            Poles::flush();
+            FrontRevalidator::tags('services');
+        });
+        static::deleted(function () {
+            Poles::flush();
+            FrontRevalidator::tags('services');
+        });
     }
 
     public function category()
     {
         return $this->belongsTo(ServiceCategory::class, 'service_category_id');
+    }
+
+    /** Icône importée (médiathèque) : remplace l'icône choisie par son nom. */
+    public function iconImage()
+    {
+        return $this->belongsTo(Media::class, 'icon_media_id');
     }
 
     public function quoteRequests()
@@ -68,8 +82,9 @@ class Service extends Model
             'description' => $this->getTranslation('short_description', $locale) ?: null,
             'deliverables' => array_values(array_filter((array) ($this->getTranslation('deliverables', $locale) ?: []), 'strlen')),
             'cta' => $this->getTranslation('cta_label', $locale) ?: null,
-            'domain' => $this->quote_domain,
+            'domain' => $this->slug, // le service est un pôle : son bouton présélectionne ce pôle dans le chiffrage
             'icon' => $this->icon,
+            'iconImage' => $this->iconImage?->toApi($locale),
         ];
     }
 }

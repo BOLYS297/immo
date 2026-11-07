@@ -13,8 +13,18 @@
         <input type="text" name="client_name" id="client_name" class="{{ $inputClass }}" value="{{ old('client_name', $testimonial->client_name) }}" required maxlength="80">
     </div>
     <div class="col-md-6">
-        <label for="pole" class="form-label text-white small fw-semibold">Pôle concerné</label>
-        <input type="text" name="pole" id="pole" class="{{ $inputClass }}" value="{{ old('pole', $testimonial->pole) }}" maxlength="40" placeholder="IA & Data, Fullstack, Infra…">
+        <label for="pole" class="form-label text-white small fw-semibold">Pôle concerné (service)</label>
+        @php($poles = \App\Services\Poles::options())
+        @php($currentPole = old('pole', $testimonial->pole))
+        <select name="pole" id="pole" class="form-select bg-dark text-light border-secondary border-opacity-25">
+            <option value="">— Aucun —</option>
+            @if(filled($testimonial->pole) && ! isset($poles[$testimonial->pole]))
+                <option value="{{ $testimonial->pole }}" @selected($currentPole === $testimonial->pole)>{{ $testimonial->pole }} (ancienne valeur)</option>
+            @endif
+            @foreach($poles as $key => $label)
+                <option value="{{ $key }}" @selected($currentPole === $key)>{{ $label }}</option>
+            @endforeach
+        </select>
     </div>
     <div class="col-12">
         @include('admin.pages.sections._field', ['field' => ['type' => 'image', 'label' => 'Photo de la personne (carrée de préférence ; avec son accord)'], 'name' => 'photo_id', 'id' => 'photo_id', 'value' => old('photo_id', $testimonial->photo_id)])

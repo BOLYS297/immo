@@ -47,7 +47,7 @@ function render(s: Section, params: BlockSearchParams): ReactNode {
     case 'commitments': return <Commitments id={id} content={s.content} />;
     case 'hero': return <Hero content={s.content} />;
     case 'statement': return <Statement content={s.content} />;
-    case 'services': return <Services content={s.content} />;
+    case 'services': return <Services content={s.content} settings={s.settings} />;
     case 'pillars': return <Pillars content={s.content} />;
     case 'diagnostic': return <DiagnosticSection content={s.content} />;
     case 'terminal': return <IMMOTerminal content={s.content} />;

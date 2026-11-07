@@ -15,8 +15,6 @@ class Booking extends Model
 
     public const STATUS_CANCELLED = 'annule';
 
-    public const NEEDS = ['ia' => 'IA & Automatisation', 'web' => 'Web & Mobile', 'infra' => 'Infra & Sécurité'];
-
     public const DEADLINES = ['urgent' => 'Urgent (< 2 semaines)', 'month' => 'Dans le mois', 'later' => 'Projet à venir / Analyse'];
 
     // Fuseau des créneaux proposés sur le site (heure de Douala).

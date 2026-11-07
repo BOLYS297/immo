@@ -43,6 +43,7 @@ export const pagesFr = {
     deadlines: ['Urgent (< 2 semaines)', 'Dans le mois', 'Projet à venir / Analyse'],
     session: 'Session de cadrage de 30 minutes', loadingSlots: 'Chargement des créneaux…', tz: 'Heures affichées : Douala (UTC+1).',
     name: 'Nom complet', email: 'Email professionnel', company: 'Entreprise', confirm: 'Confirmer le rendez-vous', back: 'Étape précédente',
+    poleOf: 'pôle {name}',
     doneTitle: 'Rendez-vous demandé', doneText: '{date} à {time} (heure de Douala), avec l’associé du {pole}. Vous recevrez une confirmation par email.',
     slotsError: 'Les créneaux n’ont pas pu être chargés. Rechargez la page ou écrivez-nous.', failed: 'La réservation a échoué. Réessayez.',
     asideTitle: 'Vous préférez nous écrire ?',

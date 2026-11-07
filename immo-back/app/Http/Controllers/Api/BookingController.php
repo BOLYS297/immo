@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Services\LeadNotifier;
+use App\Services\Poles;
 use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -35,7 +36,7 @@ class BookingController extends Controller
             'name' => ['required', 'string', 'max:80'],
             'email' => ['required', 'email', 'max:120'],
             'company' => ['required', 'string', 'max:100'],
-            'need' => ['required', Rule::in(array_keys(Booking::NEEDS))],
+            'need' => ['required', 'string', Rule::in(Poles::keys())],
             'deadline' => ['required', Rule::in(array_keys(Booking::DEADLINES))],
             'slot' => ['required', 'date', 'after:now', 'before:+31 days'],
             'locale' => ['nullable', Rule::in(array_keys(config('cms.locales')))],
@@ -66,7 +67,7 @@ class BookingController extends Controller
         $when = $booking->slot->copy()->setTimezone(Booking::TIMEZONE)->format('d/m/Y à H:i');
         LeadNotifier::send(
             "Nouveau rendez-vous le {$when} — {$booking->company}",
-            "{$booking->name} <{$booking->email}>\nCréneau : {$when} (heure de Douala)\nBesoin : ".Booking::NEEDS[$booking->need].' · Échéance : '.Booking::DEADLINES[$booking->deadline]."\n\n".route('admin.bookings.index'),
+            "{$booking->name} <{$booking->email}>\nCréneau : {$when} (heure de Douala)\nPôle : ".Poles::label($booking->need).' · Échéance : '.Booking::DEADLINES[$booking->deadline]."\n\n".route('admin.bookings.index'),
             'booking_webhook',
             ['slot' => $booking->slotIso()] + collect($validated)->only(['name', 'email', 'company', 'need', 'deadline'])->all(),
         );

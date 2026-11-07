@@ -45,6 +45,7 @@ export const pagesEn: PagesDict = {
     deadlines: ['Urgent (< 2 weeks)', 'Within the month', 'Upcoming project / Assessment'],
     session: '30-minute scoping session', loadingSlots: 'Loading time slots…', tz: 'Times shown: Douala (UTC+1).',
     name: 'Full name', email: 'Work email', company: 'Company', confirm: 'Confirm appointment', back: 'Previous step',
+    poleOf: '{name} team',
     doneTitle: 'Appointment requested', doneText: '{date} at {time} (Douala time), with the partner of the {pole}. You will receive a confirmation by email.',
     slotsError: 'Time slots could not be loaded. Reload the page or write to us.', failed: 'Booking failed. Please try again.',
     asideTitle: 'Prefer to write to us?',

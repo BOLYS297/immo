@@ -3,7 +3,8 @@ import { dictionaries } from '@/lib/dictionaries';
 import { getLocale } from '@/lib/locale';
 import { clientIp, cmsForm } from '@/server/cms-api';
 
-const DOMAINS = ['ia', 'web', 'infra'];
+// Pôle = identifiant d'un service publié (liste vérifiée par Laravel).
+const POLE = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const clean = (v: unknown, max: number) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
 /** Demande de chiffrage : contrôlée ici, enregistrée et notifiée par Laravel (admin → Demandes de devis). */
@@ -15,8 +16,8 @@ export async function POST(req: Request) {
   const b = body as Record<string, unknown>;
   if (clean(b.website, 50)) return NextResponse.json({ ok: true }); // robot : réponse neutre
 
-  const lead = { name: clean(b.name, 80), email: clean(b.email, 120), phone: clean(b.phone, 30), company: clean(b.company, 100), domain: clean(b.domain, 10), details: clean(b.details, 1500) };
-  if (!lead.name || !lead.company || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email) || !/^\+?[0-9 ().-]{6,30}$/.test(lead.phone) || !DOMAINS.includes(lead.domain) || lead.details.length < 20) {
+  const lead = { name: clean(b.name, 80), email: clean(b.email, 120), phone: clean(b.phone, 30), company: clean(b.company, 100), domain: clean(b.domain, 80), details: clean(b.details, 1500) };
+  if (!lead.name || !lead.company || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(lead.email) || !/^\+?[0-9 ().-]{6,30}$/.test(lead.phone) || !POLE.test(lead.domain) || lead.details.length < 20) {
     return NextResponse.json({ error: api.invalid }, { status: 400 });
   }
 

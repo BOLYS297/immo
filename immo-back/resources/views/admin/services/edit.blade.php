@@ -20,4 +20,6 @@
         </form>
     </div>
 
+    @include('admin.media._picker')
+    @include('admin.services._icon-preview')
 @endsection
