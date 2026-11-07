@@ -1,10 +1,10 @@
 import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowUpRight, ChevronDown, ShieldCheck } from 'lucide-react';
+import { ChevronDown, ShieldCheck } from 'lucide-react';
 import RichText from '@/components/RichText';
 import { jsonLd, plainText } from '@/lib/seo';
 import type { BlockContent, BlockSettings, MediaImage } from '@/lib/blocks';
 import BlockSection, { isInverted, tone } from './BlockSection';
+import { ButtonRow, buttonsOf, LinkList, SocialLinks } from './Buttons';
 import { initials } from '@/lib/initials';
 
 /**
@@ -19,7 +19,6 @@ function CmsImage({ image, sizes, className }: { image: MediaImage; sizes: strin
 }
 
 const H2 = 'text-4xl font-semibold tracking-tighter sm:text-5xl';
-const linkClass = 'font-semibold underline decoration-immo-cyan decoration-2 underline-offset-4';
 
 export function TextBlock({ id, content: c, settings: s }: P<'text'>) {
   if (!c.title && !c.body && !c.eyebrow) return null;
@@ -50,9 +49,7 @@ export function MediaTextBlock({ id, content: c, settings: s }: P<'media_text'>)
           {c.eyebrow && <p className={`font-medium ${inv ? 'text-immo-sky' : 'text-immo-dark/80 dark:text-immo-sky'}`}>{c.eyebrow}</p>}
           {c.title && <h2 id={`${id}-t`} className={`${c.eyebrow ? 'mt-4' : ''} ${H2} ${t.title}`}>{c.title}</h2>}
           {c.body && <RichText body={c.body} inverted={inv} className={`${c.title ? 'mt-6' : ''} space-y-4 text-lg ${t.body}`} />}
-          {c.href && c.link_label && (
-            <Link href={c.href} className="mt-8 inline-block rounded-full bg-immo-cyan px-7 py-3.5 font-semibold text-immo-dark transition-colors hover:bg-immo-sky">{c.link_label}</Link>
-          )}
+          <ButtonRow buttons={buttonsOf(c.buttons, { label: c.link_label, href: c.href })} inverted={inv} />
         </div>
       </div>
     </BlockSection>
@@ -79,11 +76,7 @@ export function CardsBlock({ id, content: c, settings: s }: P<'cards'>) {
               )}
               {it.title && <h3 className={`text-xl font-semibold ${t.title}`}>{it.title}</h3>}
               {it.text && <RichText body={it.text} inverted={inv} className={`mt-3 flex-1 space-y-3 ${t.body}`} />}
-              {it.href && (
-                <Link href={it.href} className={`mt-5 inline-flex items-center gap-1.5 ${linkClass} ${inv ? 'text-white' : ''}`}>
-                  {it.link_label || it.title} <ArrowUpRight size={16} aria-hidden />
-                </Link>
-              )}
+              <LinkList buttons={buttonsOf(it.buttons, { label: it.link_label, href: it.href })} fallback={it.title} inverted={inv} />
             </li>
           ))}
         </ul>
@@ -162,7 +155,7 @@ export function CalloutBlock({ id, content: c, settings: s }: P<'callout'>) {
         <div>
           {c.title && <h2 id={`${id}-t`} className="text-xl font-semibold text-immo-dark dark:text-white">{c.title}</h2>}
           {c.text && <p className="mt-2 max-w-2xl text-immo-dark/85 dark:text-immo-satin/90">{c.text}</p>}
-          {c.link_label && c.href && <Link href={c.href} className={`mt-5 inline-block ${linkClass}`}>{c.link_label}</Link>}
+          <LinkList buttons={buttonsOf(c.buttons, { label: c.link_label, href: c.href })} />
         </div>
       </div>
     </BlockSection>
@@ -185,7 +178,7 @@ export function QuotePanelBlock({ id, content: c }: P<'quote_panel'>) {
 
 const TEAM_COLUMNS = { '2': 'sm:grid-cols-2', '3': 'sm:grid-cols-2 lg:grid-cols-3', '4': 'sm:grid-cols-2 lg:grid-cols-4' } as const;
 
-/** Présentation de l'équipe : photo (médiathèque), nom, fonction, présentation courte, lien facultatif. */
+/** Présentation de l'équipe : photo (médiathèque), nom, fonction, présentation courte, réseaux (icônes). */
 export function TeamMembersBlock({ id, content: c, settings: s }: P<'team_members'>) {
   const members = (c.members ?? []).filter((m) => m.name);
   if (members.length === 0) return null;
@@ -205,7 +198,7 @@ export function TeamMembersBlock({ id, content: c, settings: s }: P<'team_member
             <Name className={`mt-5 text-xl font-semibold ${t.title}`}>{m.name}</Name>
             {m.role && <p className={`mt-1 font-medium ${inv ? 'text-immo-sky' : 'text-immo-dark/70 dark:text-immo-sky'}`}>{m.role}</p>}
             {m.bio && <p className={`mt-3 ${t.body}`}>{m.bio}</p>}
-            {m.link && <Link href={m.link} className={`mt-4 inline-flex w-fit items-center gap-1 ${linkClass} ${inv ? 'text-white' : ''}`} {...(m.link.startsWith('http') && { target: '_blank', rel: 'noopener noreferrer' })}>{m.link.includes('linkedin') ? 'LinkedIn' : 'Profil'}<ArrowUpRight size={16} aria-hidden /></Link>}
+            <SocialLinks socials={m.socials?.length ? m.socials : m.link ? [{ network: m.link.includes('linkedin') ? 'linkedin' : 'website', url: m.link }] : []} person={m.name ?? ''} inverted={inv} />
           </li>
         ))}
       </ul>

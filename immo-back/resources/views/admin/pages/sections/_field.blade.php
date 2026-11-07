@@ -32,6 +32,15 @@
         </div>
         @break
 
+    @case('select')
+        <label for="{{ $id }}" class="form-label text-white small fw-semibold">{{ $field['label'] }}</label>
+        <select name="{{ $name }}" id="{{ $id }}" class="form-select bg-dark text-light border-secondary border-opacity-25">
+            @foreach($field['options'] as $optionValue => $optionLabel)
+                <option value="{{ $optionValue }}" @selected((string) ($value !== '' ? $value : ($field['default'] ?? '')) === (string) $optionValue)>{{ $optionLabel }}</option>
+            @endforeach
+        </select>
+        @break
+
     @case('link')
         <label for="{{ $id }}" class="form-label text-white small fw-semibold">{{ $field['label'] }}</label>
         <input type="text" name="{{ $name }}" id="{{ $id }}" value="{{ $value }}" maxlength="255" class="{{ $inputClass }} font-monospace" placeholder="/contact ou https://…">
