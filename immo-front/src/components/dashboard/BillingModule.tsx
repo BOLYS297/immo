@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { PenLine } from 'lucide-react';
+import { ExternalLink, FileText, PenLine } from 'lucide-react';
 import { useI18n } from '@/components/I18nProvider';
 import type { DocItem } from '@/lib/portal-types';
 
@@ -28,6 +28,17 @@ export default function BillingModule({ docs, readOnly }: { docs: DocItem[]; rea
       {x.signedAt && <span className="mt-1 block text-xs text-immo-dark/70 dark:text-immo-satin/70">{d.signedOn.replace('{date}', new Intl.DateTimeFormat(tag, { dateStyle: 'medium' }).format(new Date(x.signedAt)))}</span>}
     </>
   );
+  // Fichier joint (privé, servi par le serveur Next avec la session du client) ou lien externe.
+  const viewLink = (x: DocItem) => {
+    const href = x.file ? `/api/portal/documents/${x.id}` : x.url;
+    if (!href) return null;
+    const Icon = x.file ? FileText : ExternalLink;
+    return (
+      <a href={href} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full border border-immo-dark/25 px-4 py-2 font-semibold text-immo-dark transition-colors hover:bg-immo-sky/50 dark:border-white/25 dark:text-white dark:hover:bg-white/10">
+        <Icon size={16} aria-hidden /> {b.view}<span className="sr-only"> — {x.title}</span>
+      </a>
+    );
+  };
   const signButton = (x: DocItem) => x.status === 'toSign' && !readOnly && (
     <button type="button" onClick={() => sign(x.id)} className="inline-flex items-center gap-2 rounded-full bg-immo-cyan px-4 py-2 font-semibold text-immo-dark transition-colors hover:bg-immo-sky"><PenLine size={16} aria-hidden /> {b.sign}</button>
   );
@@ -46,7 +57,7 @@ export default function BillingModule({ docs, readOnly }: { docs: DocItem[]; rea
                 <p className="font-medium">{x.title}</p>
                 <p className="text-sm text-immo-dark/80 dark:text-immo-satin/80">{kind(x)} · {amount(x)}</p>
                 <div>{status(x)}</div>
-                {signButton(x)}
+                <div className="flex flex-wrap gap-2">{viewLink(x)}{signButton(x)}</div>
               </li>
             ))}
           </ul>
@@ -61,7 +72,7 @@ export default function BillingModule({ docs, readOnly }: { docs: DocItem[]; rea
                     <td className="py-3.5 pr-4">{kind(x)}</td>
                     <td className="py-3.5 pr-4">{amount(x)}</td>
                     <td className="py-3.5 pr-4">{status(x)}</td>
-                    <td className="py-3.5">{signButton(x)}</td>
+                    <td className="py-3.5"><div className="flex flex-wrap justify-end gap-2">{viewLink(x)}{signButton(x)}</div></td>
                   </tr>
                 ))}
               </tbody>

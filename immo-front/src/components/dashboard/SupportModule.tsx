@@ -6,7 +6,7 @@ import type { Ticket } from '@/lib/portal-types';
 
 const field = 'mt-1.5 w-full rounded-xl border border-immo-dark/25 bg-white px-4 py-3 text-immo-dark dark:border-white/20 dark:bg-white/10 dark:text-white';
 
-export default function SupportModule({ tickets, readOnly }: { tickets: Ticket[]; readOnly: boolean }) {
+export default function SupportModule({ tickets, projectId, readOnly }: { tickets: Ticket[]; projectId: string; readOnly: boolean }) {
   const { t } = useI18n();
   const d = t.pages.dashboard, s = d.support;
   const router = useRouter();
@@ -18,7 +18,7 @@ export default function SupportModule({ tickets, readOnly }: { tickets: Ticket[]
     const form = e.currentTarget;
     const data = Object.fromEntries(new FormData(form).entries());
     setBusy(true); setError('');
-    const res = await fetch('/api/portal/tickets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: data.subject, message: data.message, priority: Number(data.priority) }) });
+    const res = await fetch('/api/portal/tickets', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title: data.subject, message: data.message, priority: Number(data.priority), project: projectId }) });
     setBusy(false);
     if (res.ok) { form.reset(); router.refresh(); } else setError(d.ticketFailed);
   }

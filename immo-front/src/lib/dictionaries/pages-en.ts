@@ -104,6 +104,7 @@ export const pagesEn: PagesDict = {
     note: 'Demo mode: data is sample data. Secure login (Supabase Auth) will be plugged in here.',
     tablist: 'Portal modules', tabs: ['Project tracking', 'Deliverables', 'Billing & signature', 'Support & tickets', 'My account'],
     welcome: 'Hello {name}', signOut: 'Sign out', empty: 'Nothing to show yet.', openLink: 'Open', message: 'Message', reply: 'Team reply', signedOn: 'Signed on {date}',
+    projects: { label: 'Project', none: 'No project has been opened in your space yet. Your IMMO contact will add it when your project starts.', statuses: { active: 'In progress', paused: 'On hold', done: 'Completed' } },
     preview: 'Admin preview: you are viewing {name}’s portal.', exitPreview: 'Exit preview', ticketFailed: 'The ticket could not be sent.', signFailed: 'Signing failed. Please try again.',
     account: { title: 'My account', current: 'Current password', next: 'New password (10 characters minimum)', save: 'Change password', saved: 'Password updated.', wrong: 'Current password is incorrect.', invalid: 'The new password must be at least 10 characters.' },
     kanban: {
@@ -120,7 +121,7 @@ export const pagesEn: PagesDict = {
       show: 'Show key', hide: 'Hide key', copy: 'Copy', copied: 'Copied', copyLabel: 'Copy key',
     },
     billing: {
-      title: 'Quotes, invoices and contracts', due: 'Outstanding:', cols: ['Document', 'Type', 'Amount', 'Status'], action: 'Action', sign: 'Sign',
+      title: 'Quotes, invoices and contracts', due: 'Outstanding:', cols: ['Document', 'Type', 'Amount', 'Status'], action: 'Action', sign: 'Sign', view: 'View document',
       note: 'Sample amounts and signature: real e-signature will be connected to a dedicated provider.',
       kinds: { quote: 'Quote', contract: 'Contract', invoice: 'Invoice' }, status: { signed: 'Signed', toSign: 'To sign', paid: 'Paid', pending: 'Pending' },
       docs: ['Quote — phase 1', 'Service agreement', 'Invoice — deposit', 'Invoice — milestone 2'],

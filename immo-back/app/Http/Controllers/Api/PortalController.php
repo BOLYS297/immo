@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\ClientProject;
 use App\Models\PortalItem;
 use App\Models\User;
 use App\Services\LeadNotifier;
@@ -10,6 +11,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Espace client du front Next.js. Le serveur Next garde le jeton Sanctum dans son cookie de session
@@ -51,7 +55,7 @@ class PortalController extends Controller
         return response()->json($this->issueToken($user, ['portal:read'], now()->addMinutes(30)));
     }
 
-    /** GET /api/v1/portal/me — le client et tous ses éléments. */
+    /** GET /api/v1/portal/me — le client, ses projets (le plus récent d'abord) et tous leurs éléments. */
     public function me(Request $request): JsonResponse
     {
         $user = $this->client($request);
@@ -59,7 +63,8 @@ class PortalController extends Controller
         return response()->json([
             'user' => $this->userPayload($user),
             'preview' => ! $request->user()->tokenCan('portal:write'),
-            'items' => $user->portalItems()->latest()->get()->map(fn (PortalItem $item) => $item->toPortalArray()),
+            'projects' => $user->clientProjects()->newestFirst()->get()->map(fn (ClientProject $project) => $project->toPortalArray()),
+            'items' => $user->portalItems()->whereNotNull('client_project_id')->latest()->orderByDesc('id')->get()->map(fn (PortalItem $item) => $item->toPortalArray()),
         ]);
     }
 
@@ -82,12 +87,25 @@ class PortalController extends Controller
 
         $item->update(['data' => ['status' => 'signed', 'signedAt' => now()->toIso8601String(), 'signedBy' => $user->email] + $item->data]);
 
-        LeadNotifier::send("Document signé — {$item->title}", "{$user->name} ({$user->company}) <{$user->email}> a signé « {$item->title} ».\n\n".route('admin.clients.show', $user));
+        LeadNotifier::send("Document signé — {$item->title}", "{$user->name} ({$user->company}) <{$user->email}> a signé « {$item->title} ».\n\n".route('admin.clients.show', ['client' => $user, 'projet' => $item->client_project_id]));
 
         return response()->json(['ok' => true]);
     }
 
-    /** POST /api/v1/portal/tickets */
+    /** GET /api/v1/portal/documents/{item}/file — fichier joint d'un document du client (aperçu compris). */
+    public function documentFile(Request $request, PortalItem $item): StreamedResponse|JsonResponse
+    {
+        $user = $this->client($request);
+        $file = $item->user_id === $user->id && $item->type === 'document' ? $item->file() : null;
+
+        if (! $file || ! Storage::disk(PortalItem::FILE_DISK)->exists($file['path'])) {
+            return response()->json(['error' => 'not_found'], 404);
+        }
+
+        return Storage::disk(PortalItem::FILE_DISK)->response($file['path'], $file['name'], ['X-Content-Type-Options' => 'nosniff', 'Cache-Control' => 'private, no-store']);
+    }
+
+    /** POST /api/v1/portal/tickets — rattaché à un projet du client. */
     public function ticket(Request $request): JsonResponse
     {
         $user = $this->client($request, write: true);
@@ -96,16 +114,18 @@ class PortalController extends Controller
             'title' => ['required', 'string', 'max:120'],
             'message' => ['nullable', 'string', 'max:2000'],
             'priority' => ['required', 'integer', 'between:0,2'],
+            'project' => ['required', 'integer', Rule::exists('client_projects', 'id')->where('user_id', $user->id)],
         ]);
 
         $item = $user->portalItems()->create([
+            'client_project_id' => (int) $validated['project'],
             'type' => 'ticket',
             'title' => trim($validated['title']),
             'data' => ['message' => trim($validated['message'] ?? ''), 'priority' => (int) $validated['priority'], 'status' => 'open', 'reply' => ''],
         ]);
 
         $priority = config('portal.types.ticket.fields.priority.options')[$item->data['priority']];
-        LeadNotifier::send("Nouveau ticket ({$priority}) — {$item->title}", "{$user->name} ({$user->company}) <{$user->email}>\n\n{$item->data['message']}\n\n".route('admin.clients.show', $user));
+        LeadNotifier::send("Nouveau ticket ({$priority}) — {$item->title}", "{$user->name} ({$user->company}) <{$user->email}>\nProjet : {$item->project->name}\n\n{$item->data['message']}\n\n".route('admin.clients.show', ['client' => $user, 'projet' => $item->client_project_id]));
 
         return response()->json(['ok' => true, 'id' => (string) $item->id], 201);
     }

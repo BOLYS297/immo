@@ -102,6 +102,7 @@ export const pagesFr = {
     note: 'Mode démonstration : les données sont fictives. La connexion sécurisée (Supabase Auth) se branchera ici.',
     tablist: 'Modules du portail', tabs: ['Suivi de projet', 'Livrables', 'Facturation & signature', 'Support & tickets', 'Mon compte'],
     welcome: 'Bonjour {name}', signOut: 'Se déconnecter', empty: 'Rien à afficher pour le moment.', openLink: 'Ouvrir', message: 'Message', reply: 'Réponse de l’équipe', signedOn: 'Signé le {date}',
+    projects: { label: 'Projet', none: 'Aucun projet n’est encore ouvert dans votre espace. Votre interlocuteur IMMO l’ajoutera au lancement de votre projet.', statuses: { active: 'En cours', paused: 'En pause', done: 'Terminé' } },
     preview: 'Aperçu administrateur : vous voyez le portail de {name}.', exitPreview: 'Quitter l’aperçu', ticketFailed: 'Le ticket n’a pas pu être envoyé.', signFailed: 'La signature a échoué. Réessayez.',
     account: { title: 'Mon compte', current: 'Mot de passe actuel', next: 'Nouveau mot de passe (10 caractères minimum)', save: 'Changer le mot de passe', saved: 'Mot de passe modifié.', wrong: 'Mot de passe actuel incorrect.', invalid: 'Le nouveau mot de passe doit contenir au moins 10 caractères.' },
     kanban: {
@@ -118,7 +119,7 @@ export const pagesFr = {
       show: 'Afficher la clé', hide: 'Masquer la clé', copy: 'Copier', copied: 'Copié', copyLabel: 'Copier la clé',
     },
     billing: {
-      title: 'Devis, factures et contrats', due: 'Reste à payer :', cols: ['Document', 'Type', 'Montant', 'Statut'], action: 'Action', sign: 'Signer',
+      title: 'Devis, factures et contrats', due: 'Reste à payer :', cols: ['Document', 'Type', 'Montant', 'Statut'], action: 'Action', sign: 'Signer', view: 'Voir le document',
       note: 'Montants et signature fictifs : la signature électronique réelle sera branchée à un prestataire dédié.',
       kinds: { quote: 'Devis', contract: 'Contrat', invoice: 'Facture' }, status: { signed: 'Signé', toSign: 'À signer', paid: 'Payée', pending: 'En attente' },
       docs: ['Devis — phase 1', 'Contrat de prestation', 'Facture — acompte', 'Facture — jalon 2'],

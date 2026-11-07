@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\MediaController as AdminMediaController;
 use App\Http\Controllers\Admin\MenuController as AdminMenuController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PageSectionController as AdminPageSectionController;
+use App\Http\Controllers\Admin\ClientProjectController as AdminClientProjectController;
 use App\Http\Controllers\Admin\PortalItemController as AdminPortalItemController;
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
@@ -79,9 +80,13 @@ Route::middleware(['admin', 'auth.session'])->prefix('admin')->name('admin.')->g
     Route::middleware('can:clients.manage')->group(function () {
         Route::resource('clients', AdminClientController::class);
         Route::post('/clients/{client}/apercu', [AdminClientController::class, 'preview'])->name('clients.preview');
-        Route::post('/clients/{client}/elements', [AdminPortalItemController::class, 'store'])->name('clients.items.store');
+        Route::post('/clients/{client}/projets', [AdminClientProjectController::class, 'store'])->name('clients.projects.store');
+        Route::put('/projets/{clientProject}', [AdminClientProjectController::class, 'update'])->name('client-projects.update');
+        Route::delete('/projets/{clientProject}', [AdminClientProjectController::class, 'destroy'])->name('client-projects.destroy');
+        Route::post('/projets/{clientProject}/elements', [AdminPortalItemController::class, 'store'])->name('client-projects.items.store');
         Route::put('/elements/{item}', [AdminPortalItemController::class, 'update'])->name('portal-items.update');
         Route::delete('/elements/{item}', [AdminPortalItemController::class, 'destroy'])->name('portal-items.destroy');
+        Route::get('/elements/{item}/fichier', [AdminPortalItemController::class, 'file'])->name('portal-items.file');
     });
 
     // Médiathèque (images des sections)

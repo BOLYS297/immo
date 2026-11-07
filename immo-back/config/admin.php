@@ -73,6 +73,7 @@ return [
             'Page' => 'la page', 'PageSection' => 'la section', 'Post' => 'l\'article', 'Service' => 'le service', 'Project' => 'la réalisation',
             'Faq' => 'la question', 'Testimonial' => 'l\'avis', 'Media' => 'l\'image', 'MenuItem' => 'le lien de menu', 'User' => 'le compte',
             'QuoteRequest' => 'la demande de devis', 'Booking' => 'le rendez-vous', 'ContactMessage' => 'le message', 'PortalItem' => 'l\'élément du portail',
+            'ClientProject' => 'le projet client',
         ],
         'routes' => [
             'Page' => 'admin.pages.edit', 'PageSection' => 'admin.sections.edit', 'Post' => 'admin.posts.edit', 'Service' => 'admin.services.edit',
