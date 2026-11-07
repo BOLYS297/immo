@@ -4,7 +4,8 @@
     Un élément traduit garde la place de l'original : ni flèches ni « Retirer » (la liste se modifie dans la langue par défaut).
 --}}
 @php($mirror = $sourceItem !== null)
-@php($sourceTitle = $mirror ? collect($sourceItem)->first(fn ($v, $k) => is_string($v) && trim($v) !== '' && ! in_array($k, ['href', 'url', 'image', 'photo', 'network'], true)) : null)
+{{-- Nom de l'original : titre, nom, question ou libellé en priorité (l'ordre des clés enregistrées n'est pas garanti). --}}
+@php($sourceTitle = $mirror ? collect(['title', 'name', 'question', 'label', 'value'])->map(fn ($k) => $sourceItem[$k] ?? null)->merge(collect($sourceItem)->except(['href', 'url', 'image', 'photo', 'network']))->first(fn ($v) => is_string($v) && trim($v) !== '') : null)
 <div @class(['rounded border border-secondary border-opacity-25', 'p-3 mb-2' => $depth === 0, 'p-2 mb-2 bg-black bg-opacity-25' => $depth > 0]) data-repeater-item @if($mirror) data-repeater-mirror @endif>
     <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
         <span class="text-info small fw-semibold text-truncate">
