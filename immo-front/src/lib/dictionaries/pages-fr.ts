@@ -102,7 +102,7 @@ export const pagesFr = {
     note: 'Mode démonstration : les données sont fictives. La connexion sécurisée (Supabase Auth) se branchera ici.',
     tablist: 'Modules du portail', tabs: ['Suivi de projet', 'Livrables', 'Facturation & signature', 'Support & tickets', 'Mon compte'],
     welcome: 'Bonjour {name}', signOut: 'Se déconnecter', empty: 'Rien à afficher pour le moment.', openLink: 'Ouvrir', message: 'Message', reply: 'Réponse de l’équipe', signedOn: 'Signé le {date}',
-    preview: 'Aperçu administrateur : vous voyez le portail de {name}.', ticketFailed: 'Le ticket n’a pas pu être envoyé.', signFailed: 'La signature a échoué. Réessayez.',
+    preview: 'Aperçu administrateur : vous voyez le portail de {name}.', exitPreview: 'Quitter l’aperçu', ticketFailed: 'Le ticket n’a pas pu être envoyé.', signFailed: 'La signature a échoué. Réessayez.',
     account: { title: 'Mon compte', current: 'Mot de passe actuel', next: 'Nouveau mot de passe (10 caractères minimum)', save: 'Changer le mot de passe', saved: 'Mot de passe modifié.', wrong: 'Mot de passe actuel incorrect.', invalid: 'Le nouveau mot de passe doit contenir au moins 10 caractères.' },
     kanban: {
       milestones: 'Jalons du projet', board: 'Tableau des sprints', progress: 'Avancement : ',

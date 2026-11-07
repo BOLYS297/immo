@@ -28,7 +28,13 @@ export default function DashboardApp({ user, items, preview }: { user: PortalUse
         </div>
         {!preview && <LogoutButton to="/connexion" />}
       </div>
-      {preview && <p role="note" className="mt-4 rounded-xl border border-immo-cyan bg-immo-sky/40 px-4 py-3 text-sm font-medium dark:bg-white/10">{d.preview.replace('{name}', user.name)}</p>}
+      {/* Bandeau réservé à l'aperçu ouvert depuis l'admin ; « Quitter l'aperçu » révoque le jeton de lecture seule. */}
+      {preview && (
+        <div role="note" className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-immo-cyan bg-immo-sky/40 px-4 py-3 text-sm font-medium dark:bg-white/10">
+          <p>{d.preview.replace('{name}', user.name)}</p>
+          <LogoutButton to="/connexion" label={d.exitPreview} />
+        </div>
+      )}
 
       <div role="tablist" aria-label={d.tablist} className="mt-8 flex gap-2 overflow-x-auto border-b border-immo-dark/15 pb-3 dark:border-white/15">
         {tabs.map(({ id, icon: Icon }) => (
