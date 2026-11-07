@@ -154,20 +154,21 @@ class PortalTest extends TestCase
         $this->getJson("/api/v1/portal/documents/{$doc->id}/file", ['X-Front-Key' => 'front-key'])->assertUnauthorized();
 
         // L'admin le remplace, puis le retire ; supprimer l'élément efface son fichier.
-        $this->actingAs($this->admin)->put(route('admin.portal-items.update', $doc), [
+        // Garde « web » explicite : les appels d'API ci-dessus ont basculé la garde par défaut sur Sanctum.
+        $this->actingAs($this->admin, 'web')->put(route('admin.portal-items.update', $doc), [
             'title' => 'Contrat', 'data' => ['kind' => 'contract', 'status' => 'toSign', 'file' => UploadedFile::fake()->create('v2.pdf', 50, 'application/pdf')],
         ])->assertSessionHasNoErrors();
         Storage::disk('local')->assertMissing($path);
         $path = $doc->fresh()->file()['path'];
         $this->assertSame('v2.pdf', $doc->fresh()->file()['name']);
 
-        $this->actingAs($this->admin)->put(route('admin.portal-items.update', $doc), ['title' => 'Contrat', 'data' => ['kind' => 'contract', 'status' => 'toSign'], 'remove' => ['file' => '1']]);
+        $this->actingAs($this->admin, 'web')->put(route('admin.portal-items.update', $doc), ['title' => 'Contrat', 'data' => ['kind' => 'contract', 'status' => 'toSign'], 'remove' => ['file' => '1']]);
         Storage::disk('local')->assertMissing($path);
         $this->assertNull($doc->fresh()->file());
 
-        $this->actingAs($this->admin)->put(route('admin.portal-items.update', $doc), ['title' => 'Contrat', 'data' => ['kind' => 'contract', 'status' => 'toSign', 'file' => UploadedFile::fake()->create('v3.pdf', 50, 'application/pdf')]]);
+        $this->actingAs($this->admin, 'web')->put(route('admin.portal-items.update', $doc), ['title' => 'Contrat', 'data' => ['kind' => 'contract', 'status' => 'toSign', 'file' => UploadedFile::fake()->create('v3.pdf', 50, 'application/pdf')]]);
         $path = $doc->fresh()->file()['path'];
-        $this->actingAs($this->admin)->delete(route('admin.portal-items.destroy', $doc))->assertRedirect();
+        $this->actingAs($this->admin, 'web')->delete(route('admin.portal-items.destroy', $doc))->assertRedirect();
         Storage::disk('local')->assertMissing($path);
     }
 
