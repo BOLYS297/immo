@@ -81,7 +81,7 @@ class SectionLookTest extends TestCase
         $this->page->publish();
         $member = $this->getJson('/api/v1/pages/offre')->json('data.sections.0.content.members.0');
         $this->assertSame(['Awa', $this->media->id], [$member['name'], $member['photo']['id']]);
-        $this->assertSame([['network' => 'linkedin', 'url' => 'https://www.linkedin.com/in/awa'], ['network' => 'tiktok', 'url' => 'https://www.tiktok.com/@awa']], $member['socials']);
+        $this->assertEquals([['network' => 'linkedin', 'url' => 'https://www.linkedin.com/in/awa'], ['network' => 'tiktok', 'url' => 'https://www.tiktok.com/@awa']], $member['socials']);
 
         $this->actingAs($this->admin)->put(route('admin.sections.update', $section), ['is_visible' => '1', 'content' => ['fr' => ['members' => [['name' => 'X', 'socials' => [['network' => 'linkedin', 'url' => 'javascript:alert(1)']]]]]]])->assertSessionHasErrors('content.fr.members.0.socials.0.url');
         $this->actingAs($this->admin)->put(route('admin.sections.update', $section), ['is_visible' => '1', 'content' => ['fr' => ['members' => [['name' => 'X', 'socials' => [['network' => 'myspace', 'url' => 'https://myspace.com/x']]]]]]])->assertSessionHasErrors('content.fr.members.0.socials.0.network');

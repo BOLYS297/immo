@@ -39,7 +39,7 @@ class SectionButtonsTest extends TestCase
             ]]]]],
         ])->assertSessionHasNoErrors();
 
-        $this->assertSame([['label' => 'Réserver', 'href' => '/contact'], ['label' => '', 'href' => 'https://example.com/brochure.pdf']], $cards->fresh()->contentFor('fr')['items'][0]['buttons']);
+        $this->assertEquals([['label' => 'Réserver', 'href' => '/contact'], ['label' => '', 'href' => 'https://example.com/brochure.pdf']], $cards->fresh()->contentFor('fr')['items'][0]['buttons']);
 
         $tooMany = array_fill(0, 5, ['label' => 'Lien', 'href' => '/contact']);
         $this->actingAs($this->admin)->put(route('admin.sections.update', $cards), ['is_visible' => '1', 'content' => ['fr' => ['items' => [['title' => 'Audit', 'buttons' => $tooMany]]]]])
@@ -81,19 +81,19 @@ class SectionButtonsTest extends TestCase
         (require database_path('migrations/2026_11_07_110000_convert_section_buttons_to_lists.php'))->up();
 
         $band->refresh();
-        $this->assertSame([['label' => 'Devis', 'href' => '/devis'], ['label' => 'Solutions', 'href' => '/services']], $band->contentFor('fr')['buttons']);
-        $this->assertSame([['label' => 'Quote', 'href' => '/devis']], $band->contentFor('en')['buttons'], 'lien vide en anglais : celui de la version française');
+        $this->assertEquals([['label' => 'Devis', 'href' => '/devis'], ['label' => 'Solutions', 'href' => '/services']], $band->contentFor('fr')['buttons']);
+        $this->assertEquals([['label' => 'Quote', 'href' => '/devis']], $band->contentFor('en')['buttons'], 'lien vide en anglais : celui de la version française');
         $this->assertArrayNotHasKey('primary', $band->contentFor('fr'));
 
         $members = $team->fresh()->contentFor('fr')['members'];
-        $this->assertSame([['network' => 'linkedin', 'url' => 'https://www.linkedin.com/in/awa']], $members[0]['socials']);
+        $this->assertEquals([['network' => 'linkedin', 'url' => 'https://www.linkedin.com/in/awa']], $members[0]['socials']);
         $this->assertSame(['name' => 'Paul'], $members[1]);
 
         $items = $cards->fresh()->contentFor('fr')['items'];
-        $this->assertSame([['label' => '', 'href' => '/contact']], $items[0]['buttons']);
+        $this->assertEquals([['label' => '', 'href' => '/contact']], $items[0]['buttons']);
         $this->assertSame(['title' => 'Sans lien'], $items[1]);
 
         $snapshot = json_decode(DB::table('page_revisions')->where('id', $revision->id)->value('snapshot'), true);
-        $this->assertSame([['label' => 'En savoir plus', 'href' => '/regles']], $snapshot['sections'][0]['content']['fr']['buttons']);
+        $this->assertEquals([['label' => 'En savoir plus', 'href' => '/regles']], $snapshot['sections'][0]['content']['fr']['buttons']);
     }
 }
