@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { DEADLINE_KEYS, NEED_KEYS, generateSlots } from '@/lib/booking';
+import { DEADLINE_KEYS, generateSlots } from '@/lib/booking';
 import { dictionaries } from '@/lib/dictionaries';
 import { getLocale } from '@/lib/locale';
 import { clientIp, cmsForm } from '@/server/cms-api';
@@ -23,9 +23,10 @@ export async function POST(req: Request) {
   const b = body as Record<string, unknown>;
   if (clean(b.website, 50)) return NextResponse.json({ ok: true });
 
-  const booking = { need: clean(b.need, 10), deadline: clean(b.deadline, 10), slot: clean(b.slot, 30), name: clean(b.name, 80), email: clean(b.email, 120), company: clean(b.company, 100) };
+  const booking = { need: clean(b.need, 80), deadline: clean(b.deadline, 10), slot: clean(b.slot, 30), name: clean(b.name, 80), email: clean(b.email, 120), company: clean(b.company, 100) };
   const valid =
-    (NEED_KEYS as readonly string[]).includes(booking.need) && (DEADLINE_KEYS as readonly string[]).includes(booking.deadline) &&
+    // Pôle = identifiant d'un service publié, vérifié par Laravel.
+    /^[a-z0-9]+(-[a-z0-9]+)*$/.test(booking.need) && (DEADLINE_KEYS as readonly string[]).includes(booking.deadline) &&
     generateSlots().includes(booking.slot) && booking.name && booking.company && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(booking.email);
   if (!valid) return NextResponse.json({ error: api.invalid }, { status: 400 });
 

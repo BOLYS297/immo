@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Prospect;
 use App\Models\QuoteRequest;
+use App\Models\Service;
 use App\Services\LeadNotifier;
+use App\Services\Poles;
 use App\Services\QuoteReferenceGenerator;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -22,7 +24,7 @@ class QuoteController extends Controller
             'email' => ['required', 'email', 'max:120'],
             'phone' => ['required', 'string', 'regex:/^\+?[0-9 ().-]{6,30}$/'],
             'company' => ['required', 'string', 'max:100'],
-            'domain' => ['required', Rule::in(array_keys(QuoteRequest::DOMAINS))],
+            'domain' => ['required', 'string', Rule::in(Poles::keys())],
             'details' => ['required', 'string', 'min:20', 'max:1500'],
             'locale' => ['nullable', Rule::in(array_keys(config('cms.locales')))],
         ]);
@@ -38,7 +40,7 @@ class QuoteController extends Controller
                 'company' => trim($validated['company']),
             ])->save();
 
-            return QuoteRequest::create([
+            $quote = QuoteRequest::create([
                 'prospect_id' => $prospect->id,
                 'reference' => QuoteReferenceGenerator::generate(),
                 'domain' => $validated['domain'],
@@ -47,11 +49,15 @@ class QuoteController extends Controller
                 'status' => QuoteRequest::STATUS_NEW,
                 'privacy_consent' => true, // mention d'information affichée sous le formulaire du front
             ]);
+            // Pôle = service : la demande est aussi rattachée au service choisi.
+            $quote->services()->attach(Service::where('slug', $validated['domain'])->pluck('id'));
+
+            return $quote;
         });
 
         LeadNotifier::send(
             "Nouvelle demande de devis {$quote->reference} — {$validated['company']}",
-            "{$validated['name']} <{$validated['email']}> · {$validated['phone']}\nDomaine : {$quote->domain_label}\n\n{$validated['details']}\n\n".route('admin.quotes.show', $quote),
+            "{$validated['name']} <{$validated['email']}> · {$validated['phone']}\nPôle : {$quote->domain_label}\n\n{$validated['details']}\n\n".route('admin.quotes.show', $quote),
             'quote_webhook',
             ['reference' => $quote->reference] + collect($validated)->only(['name', 'email', 'phone', 'company', 'domain', 'details'])->all(),
         );

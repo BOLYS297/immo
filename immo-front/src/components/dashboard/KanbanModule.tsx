@@ -31,7 +31,10 @@ export default function KanbanModule({ tasks, milestones }: { tasks: Task[]; mil
               <h3 className="mb-3 font-semibold">{name}</h3>
               <ul className="space-y-3">
                 {tasks.filter((x) => x.col === ci).map((x) => (
-                  <li key={x.id} className="rounded-xl border-l-4 border-immo-cyan bg-immo-satin p-3 dark:bg-white/10"><p className="font-medium">{x.title}</p>{x.owner && <p className="text-sm text-immo-dark/70 dark:text-immo-satin/70">{x.owner}</p>}</li>
+                  <li key={x.id} className="rounded-xl border-l-4 border-immo-cyan bg-immo-satin p-3 dark:bg-white/10">
+                    <p className="font-medium">{x.title}</p>
+                    {(x.poleLabel || x.owner) && <p className="text-sm text-immo-dark/70 dark:text-immo-satin/70">{[x.poleLabel, x.owner].filter(Boolean).join(' · ')}</p>}
+                  </li>
                 ))}
               </ul>
             </div>

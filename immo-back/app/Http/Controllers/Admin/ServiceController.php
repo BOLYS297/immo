@@ -59,8 +59,9 @@ class ServiceController extends Controller
         $default = config('cms.default_locale');
         $validated = $request->validate([
             'slug' => ['nullable', 'string', 'max:80', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/', Rule::unique('services', 'slug')->ignore($service)],
-            'icon' => ['required', Rule::in(array_keys(config('cms.service_icons')))],
-            'quote_domain' => ['nullable', Rule::in(['ia', 'web', 'infra'])],
+            // Nom d'une icône Lucide (lucide.dev, ex. « brain-circuit ») ; une icône importée la remplace.
+            'icon' => ['required', 'string', 'max:60', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/'],
+            'icon_media_id' => ['nullable', 'integer', 'exists:media,id'],
             'sort_order' => ['required', 'integer', 'between:0,999'],
             'is_published' => ['boolean'],
         ] + $this->translatedRules([
@@ -70,12 +71,13 @@ class ServiceController extends Controller
             'cta_label' => ['string', 'max:80'],
         ], ['title', 'short_description']), [
             'slug.regex' => 'L\'identifiant ne peut contenir que des lettres minuscules, des chiffres et des tirets.',
+            'icon.regex' => 'Nom d\'icône Lucide en minuscules et tirets, ex. « brain-circuit ».',
         ], $this->translatedAttributes(['title' => 'titre', 'short_description' => 'description', 'deliverables' => 'livrables', 'cta_label' => 'bouton']));
 
         return [
             'slug' => ($validated['slug'] ?? null) ?: ($service?->slug ?? $this->uniqueSlug($validated['title'][$default])),
             'icon' => $validated['icon'],
-            'quote_domain' => $validated['quote_domain'] ?? null,
+            'icon_media_id' => $validated['icon_media_id'] ?? null,
             'sort_order' => $validated['sort_order'],
             'is_published' => $request->boolean('is_published'),
             'title' => $this->translations($validated, 'title'),

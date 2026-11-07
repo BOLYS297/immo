@@ -2,12 +2,12 @@
 import { useState } from 'react';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { useI18n } from '@/components/I18nProvider';
-import { DOMAIN_KEYS, type DomainKey } from '@/lib/services-data';
 import FormNotice from '@/components/legal/FormNotice';
 
 const field = 'mt-1.5 w-full rounded-xl border border-immo-dark/25 bg-white px-4 py-3 text-immo-dark placeholder:text-immo-dark/60 dark:border-white/20 dark:bg-white/10 dark:text-white dark:placeholder:text-white/70';
 
-export default function QuoteForm({ defaultDomain }: { defaultDomain?: DomainKey }) {
+/** `poles` : services publiés (chaque service est un pôle), sinon les trois pôles historiques. */
+export default function QuoteForm({ poles, defaultDomain }: { poles: { key: string; label: string }[]; defaultDomain?: string }) {
   const f = useI18n().t.pages.services.form;
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -42,7 +42,7 @@ export default function QuoteForm({ defaultDomain }: { defaultDomain?: DomainKey
       <label className="font-semibold">{f.phone}<input name="phone" type="tel" required minLength={6} maxLength={30} pattern="\+?[0-9 \(\)\.\-]{6,30}" autoComplete="tel" inputMode="tel" placeholder="+237 6XX XXX XXX" className={field} /></label>
       <label className="font-semibold">{f.company}<input name="company" required maxLength={100} autoComplete="organization" className={field} /></label>
       <label className="font-semibold sm:col-span-2">{f.domain}
-        <select name="domain" defaultValue={defaultDomain ?? 'ia'} className={field}>{DOMAIN_KEYS.map((k, i) => <option key={k} value={k}>{f.domainShort[i]}</option>)}</select>
+        <select name="domain" defaultValue={defaultDomain ?? poles[0]?.key} className={field}>{poles.map((p) => <option key={p.key} value={p.key}>{p.label}</option>)}</select>
       </label>
       <label className="font-semibold sm:col-span-2">{f.details}<textarea name="details" required minLength={20} maxLength={1500} rows={5} className={field} placeholder={f.placeholder} /></label>
       <input name="website" tabIndex={-1} autoComplete="off" aria-hidden className="hidden" />

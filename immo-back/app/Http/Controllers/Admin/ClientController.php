@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\PortalItem;
 use App\Models\User;
+use App\Services\Poles;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,7 +42,8 @@ class ClientController extends Controller
         $projects = $client->clientProjects()->newestFirst()->withCount('items')->get();
         $project = $projects->firstWhere('id', $request->integer('projet')) ?? $projects->first();
         $items = $project ? $project->items()->latest()->orderByDesc('id')->get()->groupBy('type') : collect();
-        $types = config('portal.types');
+        // Listes de pôles (services publiés) résolues pour les formulaires.
+        $types = array_map(fn (array $definition) => ['fields' => array_map([Poles::class, 'resolve'], $definition['fields'])] + $definition, config('portal.types'));
 
         return view('admin.clients.show', compact('client', 'projects', 'project', 'items', 'types'));
     }

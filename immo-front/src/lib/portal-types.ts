@@ -10,7 +10,8 @@ export const PROJECT_STATUSES = ['active', 'paused', 'done'] as const;
 export type Project = { id: string; name: string; status: (typeof PROJECT_STATUSES)[number]; summary: string };
 
 type Base = { id: string; clientId: string; projectId: string; createdAt: string };
-export type Task = Base & { type: 'task'; title: string; owner: string; col: number };
+/** `pole` : service (pôle) ; `poleLabel` : son titre dans la langue demandée ; `owner` : responsable. */
+export type Task = Base & { type: 'task'; title: string; pole?: string; poleLabel?: string; owner: string; col: number };
 export type Milestone = Base & { type: 'milestone'; title: string; due: string; progress: number };
 export type Deliverable = Base & { type: 'deliverable'; title: string; note: string; url: string };
 /** `file` : fichier joint privé, lu via /api/portal/documents/{id} ; `url` : lien externe (Google Drive…). */

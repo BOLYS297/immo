@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
+use App\Services\Poles;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -21,7 +22,7 @@ class TestimonialController extends Controller
             'name' => $t->client_name,
             'role' => (string) $t->role,
             'company' => (string) $t->company,
-            'pole' => (string) $t->pole,
+            'pole' => (string) Poles::label($t->pole, $locale),
             'quote' => (string) $t->getTranslation('content', $locale),
             'metric' => (string) $t->getTranslation('metric', $locale),
             'photo' => $t->photo?->toApi($locale),

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\RecordsActivity;
+use App\Services\Poles;
 use Illuminate\Database\Eloquent\Model;
 
 class QuoteRequest extends Model
@@ -20,9 +21,6 @@ class QuoteRequest extends Model
     public const STATUS_REFUSED = 'refusee';
 
     public const STATUS_CLOSED = 'cloturee';
-
-    /** Pôles du formulaire de chiffrage du front. */
-    public const DOMAINS = ['ia' => 'IA & Automatisation', 'web' => 'Web & Mobile', 'infra' => 'Infra & Sécurité'];
 
     protected $fillable = [
         'prospect_id',
@@ -58,7 +56,7 @@ class QuoteRequest extends Model
 
     public function getDomainLabelAttribute(): ?string
     {
-        return $this->domain ? (self::DOMAINS[$this->domain] ?? $this->domain) : null;
+        return Poles::label($this->domain);
     }
 
     public function getStatusLabelAttribute(): string

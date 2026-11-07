@@ -11,7 +11,8 @@
 | attendues par le front (immo-front/src/lib/portal-types.ts).
 |
 | Types de champs : text, textarea, url (http/https), integer (min, max),
-| amount (entier ≥ 0, vide autorisé), select (options ; `int` = valeurs numériques),
+| amount (entier ≥ 0, vide autorisé), select (options ; `int` = valeurs numériques ;
+| 'poles' = services publiés, App\Services\Poles),
 | file (fichier joint sur le disque privé : `mimes`, `max_kb` ; servi au seul client
 | connecté et à l'équipe). Tous les éléments ont en plus un titre (120 caractères)
 | et appartiennent à un projet du client (table client_projects).
@@ -27,7 +28,8 @@ return [
             'item_label' => 'tâche',
             'icon' => 'bi-kanban',
             'fields' => [
-                'owner' => ['type' => 'text', 'label' => 'Pôle / responsable', 'max' => 40],
+                'pole' => ['type' => 'select', 'label' => 'Pôle (service)', 'options' => 'poles', 'empty_label' => '— Aucun —', 'default' => ''],
+                'owner' => ['type' => 'text', 'label' => 'Responsable', 'max' => 40],
                 'col' => ['type' => 'select', 'label' => 'Colonne', 'int' => true, 'default' => 0, 'options' => [0 => 'Backlog', 1 => 'Sprint en cours', 2 => 'En revue', 3 => 'Validé']],
             ],
         ],

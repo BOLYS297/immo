@@ -1,18 +1,18 @@
+import Image from 'next/image';
 import Link from 'next/link';
-import { AppWindow, BrainCircuit, ChartLine, Cloud, Code2, PenTool, ServerCog, ShieldCheck, Smartphone, Workflow, type LucideIcon } from 'lucide-react';
-import type { BlockContent, BlockSettings } from '@/lib/blocks';
+import { AppWindow, ShieldCheck, Workflow, type LucideIcon } from 'lucide-react';
+import type { BlockContent, BlockSettings, MediaImage } from '@/lib/blocks';
 import { getDict, getLocale } from '@/lib/locale';
+import { lucideIcon } from '@/lib/lucide';
 import { DOMAIN_KEYS } from '@/lib/services-data';
-import { getServices } from '@/server/cms-api';
+import { getServices, type ServiceView } from '@/server/cms-api';
 
-/** Icônes proposées dans l'admin (immo-back config/cms.php, service_icons). */
-const ICONS: Record<string, LucideIcon> = {
-  workflow: Workflow, 'brain-circuit': BrainCircuit, 'app-window': AppWindow, smartphone: Smartphone, code: Code2,
-  'pen-tool': PenTool, 'server-cog': ServerCog, cloud: Cloud, 'shield-check': ShieldCheck, 'chart-line': ChartLine,
-};
 const DEFAULT_ICONS: LucideIcon[] = [Workflow, AppWindow, ShieldCheck];
 
-type Domain = { title?: string | null; benefit?: string | null; deliverables: string[]; cta?: string | null; href: string; icon: LucideIcon };
+/** Icône d'un service : image importée dans l'admin, sinon icône Lucide d'après son nom (repli : Workflow). */
+const serviceIcon = (x: ServiceView): LucideIcon | MediaImage => x.iconImage ?? lucideIcon(x.icon) ?? Workflow;
+
+type Domain = { title?: string | null; benefit?: string | null; deliverables: string[]; cta?: string | null; href: string; icon: LucideIcon | MediaImage };
 
 /**
  * Domaines d'expertise (bloc « service_domains »). Source « services » : services publiés dans l'admin ;
@@ -25,7 +25,7 @@ export default async function ServiceDomains({ content: c = {}, settings }: { co
   let domains: Domain[] = [];
   if (settings?.source === 'services') {
     const services = await getServices(getLocale()).catch(() => []);
-    domains = services.map((x) => ({ title: x.title, benefit: x.description, deliverables: x.deliverables, cta: x.cta, href: quoteHref(x.domain), icon: ICONS[x.icon] ?? Workflow }));
+    domains = services.map((x) => ({ title: x.title, benefit: x.description, deliverables: x.deliverables, cta: x.cta, href: quoteHref(x.domain), icon: serviceIcon(x) }));
   }
   if (domains.length === 0) {
     const manual = c.domains?.length
@@ -45,7 +45,9 @@ export default async function ServiceDomains({ content: c = {}, settings }: { co
             const Icon = d.icon;
             return (
               <article key={i} className="flex flex-col border-t-2 border-immo-dark pt-6 dark:border-immo-cyan">
-                <Icon size={32} className="text-immo-dark dark:text-immo-cyan" aria-hidden />
+                {'url' in Icon
+                  ? <Image src={Icon.url} width={Icon.width} height={Icon.height} alt="" sizes="32px" className="size-8 object-contain" />
+                  : <Icon size={32} className="text-immo-dark dark:text-immo-cyan" aria-hidden />}
                 <h3 className="mt-5 text-xl font-semibold text-immo-dark dark:text-white">{d.title}</h3>
                 <p className="mt-2 text-immo-dark/85 dark:text-immo-satin/90">{d.benefit}</p>
                 {d.deliverables.length > 0 && (

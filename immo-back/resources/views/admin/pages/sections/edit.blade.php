@@ -47,6 +47,7 @@
                             @else
                                 <div class="col-sm-6">
                                     <label for="settings_{{ $key }}" class="form-label small">{{ $setting['label'] }}</label>
+                                    @php($setting = \App\Services\Poles::resolve($setting))
                                     <select name="settings[{{ $key }}]" id="settings_{{ $key }}" class="form-select" data-default="{{ $setting['default'] }}">
                                         @foreach($setting['options'] as $value => $optionLabel)
                                             <option value="{{ $value }}" @selected((string) old("settings.$key", $current[$key]) === (string) $value)>{{ $optionLabel }}</option>

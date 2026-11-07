@@ -47,7 +47,7 @@ class StructuredContentTest extends TestCase
             'short_description' => ['fr' => 'Former vos équipes.', 'en' => 'Train your teams.'],
             'deliverables' => ['fr' => "Atelier\n\n Supports ", 'en' => ''],
             'cta_label' => ['fr' => 'Nous écrire', 'en' => ''],
-            'icon' => 'pen-tool', 'quote_domain' => '', 'sort_order' => 9, 'is_published' => '1',
+            'icon' => 'pen-tool', 'sort_order' => 9, 'is_published' => '1',
         ])->assertRedirect(route('admin.services.index'))->assertSessionHasNoErrors();
 
         $service = Service::where('slug', 'formation')->firstOrFail();
@@ -55,10 +55,10 @@ class StructuredContentTest extends TestCase
         $en = collect($this->getJson('/api/v1/services?locale=en')->json('data'))->firstWhere('slug', 'formation');
         $this->assertSame('Formation', $en['title'], 'EN vide = FR');
         $this->assertSame('Train your teams.', $en['description']);
-        $this->assertNull($en['domain']);
+        $this->assertSame('formation', $en['domain'], 'le service est un pôle : son bouton le présélectionne');
         Http::assertSent(fn (Request $r) => $r['tags'] === ['services']);
 
-        $this->actingAs($this->editor)->post(route('admin.services.store'), ['title' => ['fr' => 'X'], 'short_description' => ['fr' => 'Y'], 'icon' => 'inconnue', 'sort_order' => 1])->assertSessionHasErrors('icon');
+        $this->actingAs($this->editor)->post(route('admin.services.store'), ['title' => ['fr' => 'X'], 'short_description' => ['fr' => 'Y'], 'icon' => 'Pas une icône !', 'sort_order' => 1])->assertSessionHasErrors('icon');
     }
 
     public function test_unpublished_services_projects_and_faqs_stay_private(): void

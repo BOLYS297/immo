@@ -1,13 +1,19 @@
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
-import type { BlockContent } from '@/lib/blocks';
-import { getDict } from '@/lib/locale';
+import type { BlockContent, BlockSettings } from '@/lib/blocks';
+import { getDict, getLocale } from '@/lib/locale';
+import { getServices } from '@/server/cms-api';
 
 // Liens des lignes par défaut (dictionnaire) ; une ligne saisie dans le CMS porte son propre lien.
 const HREFS = ['/services?domaine=ia#chiffrage', '/services?domaine=web#chiffrage', '/services?domaine=web#chiffrage', '/services?domaine=infra#chiffrage'];
 
-export default function Services({ content }: { content?: BlockContent<'services'> }) {
+/** Pôles de l'agence. Source « services » : chaque service publié est une ligne (repli : lignes saisies, puis dictionnaire). */
+export default async function Services({ content, settings }: { content?: BlockContent<'services'>; settings?: BlockSettings<'services'> }) {
   const s = { ...getDict().services, ...content };
+  if (settings?.source === 'services') {
+    const services = await getServices(getLocale()).catch(() => []);
+    if (services.length > 0) s.rows = services.map((x) => ({ title: x.title ?? x.slug, text: x.description ?? '', href: `/services?domaine=${x.slug}#chiffrage` }));
+  }
   return (
     <section id="poles" aria-labelledby="services-title" className="relative z-0 px-6 py-28">
       <div className="mx-auto max-w-7xl">

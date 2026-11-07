@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Testimonial;
+use App\Services\Poles;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /** Avis clients du mur /recommandations du front, en français et en anglais. */
 class TestimonialController extends Controller
@@ -57,7 +59,8 @@ class TestimonialController extends Controller
             'client_name' => ['required', 'string', 'max:80'],
             'role' => ['nullable', 'string', 'max:80'],
             'company' => ['nullable', 'string', 'max:80'],
-            'pole' => ['nullable', 'string', 'max:40'],
+            // Pôle = service ; une ancienne valeur libre reste acceptée tant qu'elle n'est pas changée.
+            'pole' => ['nullable', 'string', 'max:80', Rule::in([...array_keys(Poles::options()), ...array_filter([$request->route('testimonial')?->pole])])],
             'photo_id' => ['nullable', 'integer', 'exists:media,id'],
             'rating' => ['required', 'integer', 'between:1,5'],
             'sort_order' => ['nullable', 'integer', 'min:0'],

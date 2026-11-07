@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Concerns\RecordsActivity;
+use App\Services\Poles;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
@@ -44,9 +45,15 @@ class PortalItem extends Model
         return $this->belongsTo(ClientProject::class, 'client_project_id');
     }
 
+    /** Définition du type (config/portal.php), listes de pôles résolues. */
     public function definition(): ?array
     {
-        return config("portal.types.{$this->type}");
+        $definition = config("portal.types.{$this->type}");
+        if ($definition) {
+            $definition['fields'] = array_map([Poles::class, 'resolve'], $definition['fields']);
+        }
+
+        return $definition;
     }
 
     /** Valeur d'un champ, ou sa valeur par défaut du schéma. */
@@ -77,10 +84,11 @@ class PortalItem extends Model
     /**
      * Forme attendue par le front (immo-front/src/lib/portal-types.ts, type Item).
      * Le chemin du fichier joint reste côté serveur : le front ne reçoit que son nom.
+     * Tâche : `poleLabel` = titre du service (pôle) dans la langue demandée.
      *
      * @return array<string, mixed>
      */
-    public function toPortalArray(): array
+    public function toPortalArray(?string $locale = null): array
     {
         $data = $this->data ?? [];
         unset($data['file']);
@@ -93,6 +101,8 @@ class PortalItem extends Model
             'createdAt' => $this->created_at?->toIso8601String(),
             'type' => $this->type,
             'title' => $this->title,
-        ] + $data + ($this->type === 'document' ? ['file' => $file ? ['name' => $file['name']] : null] : []);
+        ] + $data
+            + ($this->type === 'document' ? ['file' => $file ? ['name' => $file['name']] : null] : [])
+            + ($this->type === 'task' ? ['poleLabel' => (string) Poles::label($data['pole'] ?? null, $locale)] : []);
     }
 }

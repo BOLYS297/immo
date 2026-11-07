@@ -9,7 +9,7 @@ import TestimonialWall from '@/components/reco/TestimonialWall';
 import QuoteForm from '@/components/services/QuoteForm';
 import type { BlockContent, BlockSettings } from '@/lib/blocks';
 import { getDict, getLocale } from '@/lib/locale';
-import type { DomainKey } from '@/lib/services-data';
+import { getPoles } from '@/server/poles';
 import { getFaqs, getPosts, getProjects, getTestimonials } from '@/server/cms-api';
 import { loadSite } from '@/server/site';
 import BlockSection, { isInverted, tone } from './BlockSection';
@@ -64,15 +64,19 @@ export async function TestimonialsBlock({ id, content: c, settings: s }: P<'test
   );
 }
 
-/** Ancre #chiffrage et ?domaine=… conservés : les liens « /page?domaine=ia#chiffrage » ouvrent le bon pôle. */
-export function QuoteFormBlock({ id, content: c, settings: s, domain }: P<'quote_form'> & { domain?: string }) {
-  const fromUrl: DomainKey | undefined = domain === 'ia' || domain === 'web' || domain === 'infra' ? domain : undefined;
+/**
+ * Ancre #chiffrage et ?domaine=… conservés : « /page?domaine=<service>#chiffrage » ouvre le bon pôle.
+ * Pôles = services publiés ; le lien l'emporte sur le pôle présélectionné dans l'admin.
+ */
+export async function QuoteFormBlock({ id, content: c, settings: s, domain }: P<'quote_form'> & { domain?: string }) {
+  const poles = await getPoles(getLocale(), getDict());
+  const known = (key?: string) => (key && poles.some((p) => p.key === key) ? key : undefined);
   return (
     <div id="chiffrage" className="scroll-mt-24">
       <BlockSection look={s} labelledBy={c.title ? `${id}-t` : undefined}>
         <div className="mx-auto max-w-3xl">
           <Heading id={id} title={c.title} intro={c.intro} inverted={isInverted(s)} />
-          <div className={c.title || c.intro ? 'mt-8' : ''}><QuoteForm defaultDomain={fromUrl ?? s?.default_domain} /></div>
+          <div className={c.title || c.intro ? 'mt-8' : ''}><QuoteForm poles={poles.map((p) => ({ key: p.key, label: p.short }))} defaultDomain={known(domain) ?? known(s?.default_domain)} /></div>
         </div>
       </BlockSection>
     </div>
@@ -90,7 +94,7 @@ export async function BookingBlock({ id, content: c, settings: s }: P<'booking'>
           <div>
             {c.title && <h1 id={`${id}-t`} className="max-w-2xl text-5xl font-semibold leading-[1.04] tracking-tighter text-immo-dark sm:text-6xl dark:text-white">{c.title}</h1>}
             {c.intro && <p className="mt-5 max-w-xl text-lg text-immo-dark/85 dark:text-immo-satin/90">{c.intro}</p>}
-            <div className={c.title || c.intro ? 'mt-10' : ''}><Funnel /></div>
+            <div className={c.title || c.intro ? 'mt-10' : ''}><Funnel poles={await getPoles(getLocale(), t)} /></div>
           </div>
           <aside aria-label={c.aside_title || t.footer.contact} className="h-fit border-t-2 border-immo-dark pt-6 dark:border-immo-cyan">
             {c.aside_title && <h2 className="text-xl font-semibold text-immo-dark dark:text-white">{c.aside_title}</h2>}
@@ -104,7 +108,7 @@ export async function BookingBlock({ id, content: c, settings: s }: P<'booking'>
     <BlockSection look={s} labelledBy={c.title ? `${id}-t` : undefined}>
       <div className="max-w-4xl">
         <Heading id={id} title={c.title} intro={c.intro} inverted={isInverted(s)} />
-        <div className={c.title || c.intro ? 'mt-10' : ''}><Funnel /></div>
+        <div className={c.title || c.intro ? 'mt-10' : ''}><Funnel poles={await getPoles(getLocale(), getDict())} /></div>
       </div>
     </BlockSection>
   );

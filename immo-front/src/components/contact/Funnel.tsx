@@ -3,19 +3,21 @@ import { useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, CalendarCheck, CheckCircle2, Loader2 } from 'lucide-react';
 import { useI18n } from '@/components/I18nProvider';
 import FormNotice from '@/components/legal/FormNotice';
-import { DEADLINE_KEYS, NEED_KEYS, type DeadlineKey, type NeedKey } from '@/lib/booking';
+import { DEADLINE_KEYS, type DeadlineKey } from '@/lib/booking';
+import type { Pole } from '@/server/poles';
 
 const TZ = 'Africa/Douala';
 const fmt = (iso: string, tag: string, o: Intl.DateTimeFormatOptions) => new Intl.DateTimeFormat(tag, { ...o, timeZone: TZ }).format(new Date(iso));
 const choice = 'w-full rounded-2xl border border-immo-dark/20 bg-white/70 px-6 py-5 text-left text-lg font-semibold transition-colors hover:border-immo-cyan hover:bg-immo-sky/40 aria-checked:border-immo-cyan aria-checked:bg-immo-sky/60 dark:border-white/20 dark:bg-white/5 dark:hover:bg-white/10 dark:aria-checked:bg-white/15';
 const field = 'mt-1.5 w-full rounded-xl border border-immo-dark/25 bg-white px-4 py-3 text-immo-dark placeholder:text-immo-dark/60 dark:border-white/20 dark:bg-white/10 dark:text-white dark:placeholder:text-white/70';
 
-export default function Funnel() {
+/** Étape 1 : le pôle (service publié) concerné par le besoin. */
+export default function Funnel({ poles }: { poles: Pole[] }) {
   const { t, locale } = useI18n();
   const c = t.pages.contact;
   const tag = locale === 'fr' ? 'fr-FR' : 'en-GB';
   const [step, setStep] = useState<1 | 2 | 3>(1);
-  const [need, setNeed] = useState<NeedKey | null>(null);
+  const [need, setNeed] = useState<string | null>(null);
   const [deadline, setDeadline] = useState<DeadlineKey | null>(null);
   const [slots, setSlots] = useState<string[] | null>(null);
   const [day, setDay] = useState<string | null>(null);
@@ -37,7 +39,7 @@ export default function Funnel() {
     return [...m.entries()];
   }, [slots]);
 
-  const pole = need ? c.needs[NEED_KEYS.indexOf(need)].pole : '';
+  const pole = poles.find((p) => p.key === need)?.pole ?? '';
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -77,9 +79,9 @@ export default function Funnel() {
 
       {step === 1 && (
         <div role="radiogroup" aria-label={c.needsLabel} className="space-y-3">
-          {NEED_KEYS.map((k, i) => (
-            <button key={k} role="radio" aria-checked={need === k} onClick={() => { setNeed(k); setStep(2); }} className={choice}>
-              {c.needs[i].label}<span className="mt-1 block text-base font-medium text-immo-dark/70 dark:text-immo-satin/70">{c.needs[i].pole}</span>
+          {poles.map((p) => (
+            <button key={p.key} role="radio" aria-checked={need === p.key} onClick={() => { setNeed(p.key); setStep(2); }} className={choice}>
+              {p.label}{p.hint && <span className="mt-1 block text-base font-medium text-immo-dark/70 dark:text-immo-satin/70">{p.hint}</span>}
             </button>
           ))}
         </div>

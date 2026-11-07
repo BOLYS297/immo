@@ -57,6 +57,7 @@ class BlockSchema
     {
         $rules = ['settings' => ['nullable', 'array']];
         foreach ($settings as $key => $setting) {
+            $setting = Poles::resolve($setting);
             $rules["settings.{$key}"] = ($setting['type'] ?? 'select') === 'image'
                 ? ['nullable', 'integer', 'exists:media,id']
                 : ['nullable', 'in:'.implode(',', array_map('strval', array_keys($setting['options'])))];
@@ -76,6 +77,7 @@ class BlockSchema
         $input = is_array($input) ? $input : [];
 
         return collect($settings)->mapWithKeys(function (array $setting, string $key) use ($input) {
+            $setting = Poles::resolve($setting);
             $value = (string) ($input[$key] ?? '');
             if (($setting['type'] ?? 'select') === 'image') {
                 return [$key => ctype_digit($value) ? $value : null]; // vide = pas d'image

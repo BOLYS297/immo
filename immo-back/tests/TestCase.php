@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use App\Services\Poles;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use RuntimeException;
 
@@ -26,5 +27,11 @@ abstract class TestCase extends BaseTestCase
         }
 
         return $app;
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        Poles::flush(); // pôles mémorisés pendant la requête : chaque test repart de sa propre base
     }
 }

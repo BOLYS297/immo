@@ -42,7 +42,7 @@
                                 <a href="mailto:{{ $booking->email }}" class="text-secondary text-decoration-none" style="font-size: 0.75rem;"><i class="bi bi-envelope me-1"></i>{{ $booking->email }}</a>
                             </td>
                             <td>
-                                <div class="text-white">{{ \App\Models\Booking::NEEDS[$booking->need] ?? $booking->need }}</div>
+                                <div class="text-white">{{ \App\Services\Poles::label($booking->need) }}</div>
                                 <div class="text-secondary" style="font-size: 0.75rem;">{{ \App\Models\Booking::DEADLINES[$booking->deadline] ?? $booking->deadline }}</div>
                             </td>
                             <td><span class="badge {{ $booking->status_badge_class }}">{{ $booking->status_label }}</span></td>

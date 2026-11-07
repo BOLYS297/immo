@@ -61,11 +61,12 @@ export type BlockSettingsMap = {
   faq: Look;
   posts_list: Look & { count: '3' | '6' | '9' | 'all' };
   testimonials_wall: Look;
-  quote_form: Look & { default_domain: 'ia' | 'web' | 'infra' };
+  quote_form: Look & { default_domain: string };
   booking: Look & { layout: 'section' | 'page' };
   contact_form: Look;
   page_header: { size: 'xl' | 'lg' };
   service_domains: { source: 'manual' | 'services' };
+  services: { source: 'manual' | 'services' };
   projects_grid: Look & { count: '3' | '6' | 'all'; selection: 'all' | 'featured' };
   faq_list: Look;
   team_members: Look & { columns: '2' | '3' | '4'; photo_shape: 'round' | 'square' };
