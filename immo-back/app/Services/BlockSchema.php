@@ -50,12 +50,16 @@ class BlockSchema
         return $names;
     }
 
-    /** Ne garde que les champs du schéma ; les éléments de liste entièrement vides sont retirés. */
+    /**
+     * Ne garde que les champs du schéma ; les éléments de liste entièrement vides sont retirés.
+     * Autres langues que la langue par défaut : une liste traduit la liste française élément par élément,
+     * un élément vide garde donc sa place (il reprend l'élément français de même rang).
+     */
     public static function clean(array $fields, array $input): array
     {
         $content = [];
         foreach (array_keys(config('cms.locales')) as $locale) {
-            $content[$locale] = static::cleanFields($fields, $input[$locale] ?? []);
+            $content[$locale] = static::cleanFields($fields, $input[$locale] ?? [], $locale !== config('cms.default_locale'));
         }
 
         return $content;
@@ -121,22 +125,33 @@ class BlockSchema
         return $rules;
     }
 
-    private static function cleanFields(array $fields, mixed $input): array
+    private static function cleanFields(array $fields, mixed $input, bool $positional = false): array
     {
         $input = is_array($input) ? $input : [];
         $out = [];
         foreach ($fields as $key => $field) {
             $value = $input[$key] ?? null;
             if ($field['type'] === 'repeater') {
-                $items = array_map(fn ($item) => static::cleanFields($field['fields'], $item), is_array($value) ? array_values($value) : []);
-                $out[$key] = array_values(array_filter($items, fn (array $item) => isset($field['requires'])
-                    ? ($item[$field['requires']] ?? '') !== ''
-                    : array_filter($item, fn ($v) => $v !== '' && $v !== []) !== []));
+                $items = array_map(fn ($item) => static::cleanFields($field['fields'], $item, $positional), is_array($value) ? array_values($value) : []);
+                if ($positional) {
+                    while ($items !== [] && static::isEmptyItem(end($items))) {
+                        array_pop($items);
+                    }
+                    $out[$key] = $items;
+                } else {
+                    $out[$key] = array_values(array_filter($items, fn (array $item) => isset($field['requires'])
+                        ? ($item[$field['requires']] ?? '') !== ''
+                        : ! static::isEmptyItem($item)));
+                }
 
                 continue;
             }
             if ($field['type'] === 'select') {
-                $out[$key] = array_key_exists((string) $value, $field['options']) ? (string) $value : (string) ($field['default'] ?? array_key_first($field['options']));
+                $out[$key] = match (true) {
+                    array_key_exists((string) $value, $field['options']) => (string) $value,
+                    $positional => '', // vide : choix de la langue par défaut
+                    default => (string) ($field['default'] ?? array_key_first($field['options'])),
+                };
 
                 continue;
             }
@@ -147,6 +162,29 @@ class BlockSchema
         }
 
         return $out;
+    }
+
+    /** Élément de liste sans aucune valeur (sous-listes comprises). */
+    private static function isEmptyItem(array $item): bool
+    {
+        foreach ($item as $value) {
+            if (is_array($value) ? ! static::isEmptyList($value) : $value !== '') {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function isEmptyList(array $items): bool
+    {
+        foreach ($items as $item) {
+            if (! is_array($item) || ! static::isEmptyItem($item)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /** Identifiants de médias présents dans un contenu (une langue), d'après les champs « image » du schéma. */

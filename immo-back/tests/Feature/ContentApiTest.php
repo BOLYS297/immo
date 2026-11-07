@@ -116,7 +116,7 @@ class ContentApiTest extends TestCase
 
     public function test_testimonials_api_returns_published_ones_with_french_fallback(): void
     {
-        Testimonial::create(['client_name' => 'Awa', 'role' => 'DG', 'company' => 'Ngono SARL', 'pole' => 'IA & Data', 'content' => ['fr' => 'Très bien', 'en' => 'Great'], 'metric' => ['fr' => '12 h gagnées'], 'rating' => 5, 'is_published' => true]);
+        Testimonial::create(['client_name' => 'Awa', 'role' => ['fr' => 'Directrice générale', 'en' => 'Managing director'], 'company' => ['fr' => 'Ngono SARL'], 'pole' => 'IA & Data', 'content' => ['fr' => 'Très bien', 'en' => 'Great'], 'metric' => ['fr' => '12 h gagnées'], 'rating' => 5, 'is_published' => true]);
         Testimonial::create(['client_name' => 'Brouillon', 'content' => ['fr' => 'x'], 'rating' => 5, 'is_published' => false]);
 
         $this->getJson('/api/v1/testimonials?locale=en')
@@ -124,17 +124,19 @@ class ContentApiTest extends TestCase
             ->assertJsonCount(1, 'data')
             ->assertJsonPath('data.0.quote', 'Great')
             ->assertJsonPath('data.0.metric', '12 h gagnées')
+            ->assertJsonPath('data.0.role', 'Managing director')
             ->assertJsonPath('data.0.company', 'Ngono SARL');
     }
 
     public function test_admin_manages_bilingual_testimonials(): void
     {
         $this->actingAs($this->admin)->post(route('admin.testimonials.store'), [
-            'client_name' => 'Awa', 'role' => 'DG', 'company' => 'Ngono SARL', 'content' => ['fr' => 'Très bien', 'en' => 'Great'], 'metric' => ['fr' => '', 'en' => ''], 'rating' => 5, 'is_published' => '1',
+            'client_name' => 'Awa', 'role' => ['fr' => 'DG', 'en' => 'CEO'], 'company' => ['fr' => 'Ngono SARL', 'en' => ''], 'content' => ['fr' => 'Très bien', 'en' => 'Great'], 'metric' => ['fr' => '', 'en' => ''], 'rating' => 5, 'is_published' => '1',
         ])->assertSessionHasNoErrors();
 
         $testimonial = Testimonial::sole();
         $this->assertEquals(['fr' => 'Très bien', 'en' => 'Great'], $testimonial->getTranslations('content'));
+        $this->assertEquals(['fr' => 'DG', 'en' => 'CEO'], $testimonial->getTranslations('role'));
         $this->actingAs($this->admin)->get(route('admin.testimonials.index'))->assertOk()->assertSee('DG, Ngono SARL');
         $this->actingAs($this->admin)->get(route('admin.testimonials.edit', $testimonial))->assertOk()->assertSee('Great');
         $this->actingAs($this->admin)->get(route('admin.posts.create'))->assertOk();
