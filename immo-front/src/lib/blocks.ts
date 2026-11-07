@@ -5,26 +5,33 @@
  */
 export type Link = { title: string; text: string; href: string };
 
+/** Bouton saisi dans l'admin (champ « buttons ») ; un bouton sans lien n'est pas affiché. */
+export type Button = { label?: string; href?: string };
+/** Lien d'une personne vers un réseau (champ « socials ») : clé de config('cms.social_networks'). */
+export type Social = { network?: string; url?: string };
+/** Ancien bouton unique (contenus enregistrés avant les listes de boutons, encore lus par le front). */
+type LegacyButton = { link_label?: string; href?: string };
+
 /** Image de la médiathèque Laravel (champ « image »), déjà résolue par l'API. */
 export type MediaImage = { id: number; url: string; width: number; height: number; alt: string };
 
 export type BlockContentMap = {
   // Blocs génériques
   text: { eyebrow: string; title: string; body: string };
-  media_text: { image: MediaImage; eyebrow: string; title: string; body: string; link_label: string; href: string };
-  cards: { title: string; intro: string; items: { image?: MediaImage; title?: string; text?: string; link_label?: string; href?: string }[] };
+  media_text: { image: MediaImage; eyebrow: string; title: string; body: string; buttons: Button[] } & LegacyButton;
+  cards: { title: string; intro: string; items: ({ image?: MediaImage; title?: string; text?: string; buttons?: Button[] } & LegacyButton)[] };
   stats: { title: string; items: { value?: string; label?: string }[] };
   faq: { title: string; items: { question?: string; answer?: string }[] };
-  cta_band: { title: string; text: string; primary: string; primary_href: string; secondary: string; secondary_href: string };
+  cta_band: { title: string; text: string; buttons: Button[]; primary: string; primary_href: string; secondary: string; secondary_href: string };
   page_header: { eyebrow: string; title: string; intro: string };
-  callout: { title: string; text: string; link_label: string; href: string };
+  callout: { title: string; text: string; buttons: Button[] } & LegacyButton;
   quote_panel: { label: string; quote: string; text: string };
   // Blocs dynamiques et fonctionnels
   posts_list: { title: string; intro: string; link_label: string };
   testimonials_wall: { title: string; intro: string; empty_text: string };
   projects_grid: { title: string; intro: string; results_label: string };
   faq_list: { title: string; category: string };
-  team_members: { title: string; intro: string; members: { photo?: MediaImage; name?: string; role?: string; bio?: string; link?: string }[] };
+  team_members: { title: string; intro: string; members: { photo?: MediaImage; name?: string; role?: string; bio?: string; socials?: Social[]; link?: string }[] };
   quote_form: { title: string; intro: string };
   booking: { title: string; intro: string; aside_title: string };
   contact_form: { title: string; intro: string };
@@ -37,12 +44,12 @@ export type BlockContentMap = {
   terminal: { title: string; text: string };
   portal_preview: { title: string; text: string; button: string };
   // Blocs des pages du site (textes par défaut : dictionnaires)
-  service_domains: { title: string; deliverables_label: string; domains: { title?: string; benefit?: string; deliverables?: string; cta?: string; href?: string }[] };
+  service_domains: { title: string; deliverables_label: string; domains: { title?: string; benefit?: string; deliverables?: string; buttons?: Button[]; cta?: string; href?: string }[] };
   use_cases: { title: string; situation_label: string; solution_label: string; result_label: string; cases: { title?: string; situation?: string; solution?: string; result?: string }[] };
   methodology: { title: string; step_label: string; steps: { title?: string; text?: string }[] };
   about_intro: { title: string; intro: string; items: { title?: string; text?: string }[] };
   team: { title: string; body: string; members: { title?: string; text?: string }[] };
-  commitments: { title: string; intro: string; items: { title?: string; text?: string }[]; button: string; href: string };
+  commitments: { title: string; intro: string; items: { title?: string; text?: string }[]; buttons: Button[]; button: string; href: string };
 };
 
 /** Réglages de présentation (communs aux langues), toujours renseignés par Laravel avec leurs valeurs par défaut. */

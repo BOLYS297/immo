@@ -32,7 +32,7 @@ export function systemPage(slug: SystemSlug, t: Dict): SystemPage {
           // Domaines : services publiés dans l'admin ; ceux saisis ici servent de repli (Laravel injoignable, aucun service).
           section({ type: 'service_domains', content: {
             title: s.domainsTitle, deliverables_label: s.deliverables,
-            domains: s.domains.map((d, k) => ({ title: d.title, benefit: d.benefit, deliverables: d.deliverables.join('\n'), cta: d.cta, href: `/services?domaine=${DOMAINS[k]}#chiffrage` })),
+            domains: s.domains.map((d, k) => ({ title: d.title, benefit: d.benefit, deliverables: d.deliverables.join('\n'), buttons: [{ label: d.cta, href: `/services?domaine=${DOMAINS[k]}#chiffrage` }] })),
           }, settings: { source: 'services' } }),
           section({ type: 'use_cases', content: { title: s.casesTitle, situation_label: s.situation, solution_label: s.solution, result_label: s.result, cases: s.cases } }),
           section({ type: 'methodology', content: { title: s.methodTitle, step_label: p.common.step, steps: s.steps } }),
@@ -49,7 +49,7 @@ export function systemPage(slug: SystemSlug, t: Dict): SystemPage {
           section({ type: 'about_intro', content: { title: a.title, intro: a.intro, items: a.meaning } }),
           section({ type: 'quote_panel', content: { label: a.philoLabel, quote: a.philoQuote, text: a.philoText } }),
           section({ type: 'team', content: { title: a.storyTitle, body: `${a.story1}\n\n${a.story2}`, members: a.founders.map((f) => ({ title: f.pole, text: f.text })) } }),
-          section({ type: 'commitments', content: { title: a.commitTitle, intro: a.commitIntro, items: t.pillars.items, button: a.meet, href: '/contact' } }),
+          section({ type: 'commitments', content: { title: a.commitTitle, intro: a.commitIntro, items: t.pillars.items, buttons: [{ label: a.meet, href: '/contact' }] } }),
         ],
       };
     }
@@ -62,7 +62,7 @@ export function systemPage(slug: SystemSlug, t: Dict): SystemPage {
           section({ type: 'page_header', content: { title: r.title }, settings: { size: 'lg' } }),
           section({ type: 'stats', content: { items: r.metrics }, settings: { background: 'satin', spacing: 'compact' } }),
           section({ type: 'testimonials_wall', content: { title: r.wallTitle, empty_text: r.empty }, settings: { background: 'satin', spacing: 'compact' } }),
-          section({ type: 'callout', content: { title: r.authTitle, text: r.authText, link_label: r.authLink, href: '/contact' }, settings: { spacing: 'compact' } }),
+          section({ type: 'callout', content: { title: r.authTitle, text: r.authText, buttons: [{ label: r.authLink, href: '/contact' }] }, settings: { spacing: 'compact' } }),
         ],
       };
     }

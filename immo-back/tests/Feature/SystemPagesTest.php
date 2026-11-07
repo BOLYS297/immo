@@ -83,10 +83,10 @@ class SystemPagesTest extends TestCase
         $this->actingAs($this->editor)->get(route('admin.sections.edit', $callout))->assertOk()->assertSee('Notre règle de publication');
 
         $this->actingAs($this->editor)->put(route('admin.sections.update', $callout), [
-            'content' => ['fr' => ['title' => 'Règle', 'href' => 'javascript:alert(1)'], 'en' => []],
+            'content' => ['fr' => ['title' => 'Règle', 'buttons' => [['label' => 'Voir', 'href' => 'javascript:alert(1)']]], 'en' => []],
             'settings' => ['spacing' => 'compact'],
             'is_visible' => '1',
-        ])->assertSessionHasErrors('content.fr.href');
+        ])->assertSessionHasErrors('content.fr.buttons.0.href');
 
         $team = Page::where('slug', 'a-propos')->firstOrFail()->sections()->where('type', 'team')->firstOrFail();
         $this->actingAs($this->editor)->put(route('admin.sections.update', $team), [

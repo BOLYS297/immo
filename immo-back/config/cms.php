@@ -12,7 +12,9 @@
 | Types de champs : text, textarea, richtext (« ## » intertitre, « - » liste,
 | **gras**, [lien](/chemin ou https://…)), link (chemin interne « /… » ou URL
 | http(s)), image (média de la médiathèque ; vide en anglais = image de la version
-| française), repeater (liste d'éléments décrits par `fields`, `max` éléments).
+| française), select (liste de choix `options`), repeater (liste d'éléments décrits
+| par `fields`, `max` éléments ; un repeater peut en contenir un autre, ex. boutons
+| d'une carte ; `requires` : clé sans laquelle un élément est ignoré).
 | Le contenu est saisi par langue ; une valeur vide reprend la langue par défaut,
 | puis le texte par défaut du front.
 |
@@ -29,6 +31,20 @@ $align = ['type' => 'select', 'label' => 'Alignement', 'default' => 'left', 'opt
 // « Compact » : marges réduites, pour enchaîner les blocs d'une page de contenu (titre, chiffres, liste…).
 $spacing = ['type' => 'select', 'label' => 'Marges', 'default' => 'normal', 'options' => ['normal' => 'Normales', 'compact' => 'Réduites']];
 // Image de fond (médiathèque) et voile qui garde le texte lisible ; ajoutés aux blocs dont le fond est réglable (fin du fichier).
+// Boutons d'une section ou d'un élément (le premier est mis en avant) ; un bouton sans lien est ignoré.
+$buttons = ['type' => 'repeater', 'label' => 'Boutons', 'item_label' => 'Bouton', 'max' => 4, 'requires' => 'href', 'fields' => [
+    'label' => ['type' => 'text', 'label' => 'Libellé'],
+    'href' => ['type' => 'link', 'label' => 'Lien'],
+]];
+// Réseaux sociaux et liens d'une personne, affichés en icônes (immo-front SocialIcon).
+$socialNetworks = [
+    'linkedin' => 'LinkedIn', 'x' => 'X (Twitter)', 'facebook' => 'Facebook', 'instagram' => 'Instagram', 'tiktok' => 'TikTok',
+    'youtube' => 'YouTube', 'github' => 'GitHub', 'dribbble' => 'Dribbble', 'whatsapp' => 'WhatsApp', 'website' => 'Site / portfolio',
+];
+$socials = ['type' => 'repeater', 'label' => 'Réseaux et liens', 'item_label' => 'Lien', 'max' => 10, 'requires' => 'url', 'fields' => [
+    'network' => ['type' => 'select', 'label' => 'Réseau', 'default' => 'linkedin', 'options' => $socialNetworks],
+    'url' => ['type' => 'link', 'label' => 'Adresse (https://…)'],
+]];
 $backgroundLook = [
     'background_image' => ['type' => 'image', 'label' => 'Image de fond (facultative)'],
     'overlay' => ['type' => 'select', 'label' => 'Voile sur l\'image de fond', 'default' => 'dark', 'options' => ['dark' => 'Bleu nuit (texte blanc)', 'light' => 'Clair (texte bleu nuit)', 'none' => 'Aucun (image décorative claire)']],
@@ -74,8 +90,7 @@ $config = [
                     'image' => ['type' => 'image', 'label' => 'Image (facultative)'],
                     'title' => ['type' => 'text', 'label' => 'Titre'],
                     'text' => ['type' => 'richtext', 'label' => 'Texte'],
-                    'link_label' => ['type' => 'text', 'label' => 'Libellé du lien (facultatif)'],
-                    'href' => ['type' => 'link', 'label' => 'Lien'],
+                    'buttons' => ['label' => 'Liens (libellé vide = titre de la carte)', 'item_label' => 'Lien'] + $buttons,
                 ]],
             ],
             'settings' => [
@@ -94,8 +109,7 @@ $config = [
                 'eyebrow' => ['type' => 'text', 'label' => 'Sur-titre'],
                 'title' => ['type' => 'text', 'label' => 'Titre'],
                 'body' => ['type' => 'richtext', 'label' => 'Texte'],
-                'link_label' => ['type' => 'text', 'label' => 'Libellé du bouton (facultatif)'],
-                'href' => ['type' => 'link', 'label' => 'Lien du bouton'],
+                'buttons' => $buttons,
             ],
             'settings' => [
                 'background' => $background,
@@ -144,7 +158,7 @@ $config = [
                     'name' => ['type' => 'text', 'label' => 'Nom'],
                     'role' => ['type' => 'text', 'label' => 'Fonction / pôle'],
                     'bio' => ['type' => 'textarea', 'label' => 'Présentation courte'],
-                    'link' => ['type' => 'link', 'label' => 'Lien (LinkedIn, portfolio…)'],
+                    'socials' => $socials,
                 ]],
             ],
             'settings' => [
@@ -176,8 +190,7 @@ $config = [
             'fields' => [
                 'title' => ['type' => 'text', 'label' => 'Titre'],
                 'text' => ['type' => 'textarea', 'label' => 'Texte'],
-                'link_label' => ['type' => 'text', 'label' => 'Libellé du lien (facultatif)'],
-                'href' => ['type' => 'link', 'label' => 'Lien'],
+                'buttons' => ['label' => 'Liens'] + $buttons,
             ],
             'settings' => ['spacing' => $spacing],
         ],
@@ -308,8 +321,7 @@ $config = [
                     'title' => ['type' => 'text', 'label' => 'Titre'],
                     'benefit' => ['type' => 'textarea', 'label' => 'Bénéfice'],
                     'deliverables' => ['type' => 'textarea', 'label' => 'Livrables (un par ligne)'],
-                    'cta' => ['type' => 'text', 'label' => 'Libellé du bouton'],
-                    'href' => ['type' => 'link', 'label' => 'Lien du bouton'],
+                    'buttons' => $buttons,
                 ]],
             ],
             'settings' => [
@@ -388,8 +400,7 @@ $config = [
                     'title' => ['type' => 'text', 'label' => 'Titre'],
                     'text' => ['type' => 'textarea', 'label' => 'Texte'],
                 ]],
-                'button' => ['type' => 'text', 'label' => 'Libellé du bouton'],
-                'href' => ['type' => 'link', 'label' => 'Lien du bouton'],
+                'buttons' => ['label' => 'Boutons (vide = « Rencontrer l\'équipe » vers /contact)'] + $buttons,
             ],
         ],
 
@@ -481,14 +492,16 @@ $config = [
             'fields' => [
                 'title' => ['type' => 'text', 'label' => 'Titre'],
                 'text' => ['type' => 'textarea', 'label' => 'Texte'],
-                'primary' => ['type' => 'text', 'label' => 'Bouton principal — libellé'],
-                'primary_href' => ['type' => 'link', 'label' => 'Bouton principal — lien'],
-                'secondary' => ['type' => 'text', 'label' => 'Bouton secondaire — libellé'],
-                'secondary_href' => ['type' => 'link', 'label' => 'Bouton secondaire — lien'],
+                'buttons' => ['label' => 'Boutons (le premier est mis en avant ; vide = boutons par défaut)'] + $buttons,
             ],
         ],
 
     ],
+
+    /*
+    | Réseaux proposés pour les liens d'une personne (champ « socials » des blocs).
+    */
+    'social_networks' => $socialNetworks,
 
     /*
     | Médiathèque. Disque Laravel (config/filesystems.php) : « public » = serveur Laravel (php artisan storage:link).
