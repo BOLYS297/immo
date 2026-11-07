@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Validation\Rule;
+
 /**
  * Règles de validation et nettoyage du contenu d'une section, déduits du schéma `fields`
  * déclaré dans config/cms.php. Les champs inconnus du schéma sont ignorés.
@@ -24,17 +26,24 @@ class BlockSchema
         return $rules;
     }
 
-    /** Noms lisibles pour les messages d'erreur : « Titre (EN) », « Lignes n°2 — Lien (FR) ». */
+    /** Noms lisibles pour les messages d'erreur : « Titre (EN) », « Carte — Bouton — Lien (FR) ». */
     public static function attributes(array $fields): array
     {
         $names = [];
         foreach (array_keys(config('cms.locales')) as $locale) {
-            $suffix = ' ('.strtoupper($locale).')';
-            foreach ($fields as $key => $field) {
-                $names["content.{$locale}.{$key}"] = $field['label'].$suffix;
-                foreach ($field['fields'] ?? [] as $sub => $subField) {
-                    $names["content.{$locale}.{$key}.*.{$sub}"] = $field['item_label'].' — '.$subField['label'].$suffix;
-                }
+            $names += static::fieldAttributes($fields, "content.{$locale}", '', ' ('.strtoupper($locale).')');
+        }
+
+        return $names;
+    }
+
+    private static function fieldAttributes(array $fields, string $prefix, string $parent, string $suffix): array
+    {
+        $names = [];
+        foreach ($fields as $key => $field) {
+            $names["{$prefix}.{$key}"] = $parent.$field['label'].$suffix;
+            if ($field['type'] === 'repeater') {
+                $names += static::fieldAttributes($field['fields'], "{$prefix}.{$key}.*", $parent.$field['item_label'].' — ', $suffix);
             }
         }
 
@@ -101,6 +110,11 @@ class BlockSchema
 
                 continue;
             }
+            if ($field['type'] === 'select') {
+                $rules[$path] = ['nullable', Rule::in(array_map('strval', array_keys($field['options'])))];
+
+                continue;
+            }
             $rules[$path] = array_filter(['nullable', 'string', 'max:'.self::MAX[$field['type']], $field['type'] === 'link' ? self::LINK : null]);
         }
 
@@ -115,7 +129,14 @@ class BlockSchema
             $value = $input[$key] ?? null;
             if ($field['type'] === 'repeater') {
                 $items = array_map(fn ($item) => static::cleanFields($field['fields'], $item), is_array($value) ? array_values($value) : []);
-                $out[$key] = array_values(array_filter($items, fn (array $item) => array_filter($item, fn ($v) => $v !== '') !== []));
+                $out[$key] = array_values(array_filter($items, fn (array $item) => isset($field['requires'])
+                    ? ($item[$field['requires']] ?? '') !== ''
+                    : array_filter($item, fn ($v) => $v !== '' && $v !== []) !== []));
+
+                continue;
+            }
+            if ($field['type'] === 'select') {
+                $out[$key] = array_key_exists((string) $value, $field['options']) ? (string) $value : (string) ($field['default'] ?? array_key_first($field['options']));
 
                 continue;
             }

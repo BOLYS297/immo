@@ -1,9 +1,9 @@
-import Link from 'next/link';
 import { AppWindow, BrainCircuit, ChartLine, Cloud, Code2, PenTool, ServerCog, ShieldCheck, Smartphone, Workflow, type LucideIcon } from 'lucide-react';
 import type { BlockContent, BlockSettings } from '@/lib/blocks';
 import { getDict, getLocale } from '@/lib/locale';
 import { DOMAIN_KEYS } from '@/lib/services-data';
 import { getServices } from '@/server/cms-api';
+import { ButtonRow, buttonsOf } from '@/components/blocks/Buttons';
 
 /** Icônes proposées dans l'admin (immo-back config/cms.php, service_icons). */
 const ICONS: Record<string, LucideIcon> = {
@@ -12,7 +12,7 @@ const ICONS: Record<string, LucideIcon> = {
 };
 const DEFAULT_ICONS: LucideIcon[] = [Workflow, AppWindow, ShieldCheck];
 
-type Domain = { title?: string | null; benefit?: string | null; deliverables: string[]; cta?: string | null; href: string; icon: LucideIcon };
+type Domain = { title?: string | null; benefit?: string | null; deliverables: string[]; buttons: { label: string; href: string }[]; icon: LucideIcon };
 
 /**
  * Domaines d'expertise (bloc « service_domains »). Source « services » : services publiés dans l'admin ;
@@ -25,14 +25,17 @@ export default async function ServiceDomains({ content: c = {}, settings }: { co
   let domains: Domain[] = [];
   if (settings?.source === 'services') {
     const services = await getServices(getLocale()).catch(() => []);
-    domains = services.map((x) => ({ title: x.title, benefit: x.description, deliverables: x.deliverables, cta: x.cta, href: quoteHref(x.domain), icon: ICONS[x.icon] ?? Workflow }));
+    domains = services.map((x) => ({ title: x.title, benefit: x.description, deliverables: x.deliverables, buttons: x.cta ? [{ label: x.cta, href: quoteHref(x.domain) }] : [], icon: ICONS[x.icon] ?? Workflow }));
   }
   if (domains.length === 0) {
     const manual = c.domains?.length
       ? c.domains.map((d) => ({ ...d, deliverables: (d.deliverables ?? '').split('\n').map((x) => x.trim()).filter(Boolean) }))
       : s.domains;
-    domains = manual.map((d: { title?: string; benefit?: string; deliverables: string[]; cta?: string; href?: string }, i) => ({
-      ...d, href: d.href || quoteHref(DOMAIN_KEYS[i] ?? 'web'), icon: DEFAULT_ICONS[i % DEFAULT_ICONS.length],
+    // Ancien format (cta + href) et textes du dictionnaire : un seul bouton vers le chiffrage du pôle.
+    domains = manual.map((d: { title?: string; benefit?: string; deliverables: string[]; buttons?: { label?: string; href?: string }[]; cta?: string; href?: string }, i) => ({
+      title: d.title, benefit: d.benefit, deliverables: d.deliverables,
+      buttons: buttonsOf(d.buttons, { label: d.cta, href: d.href || quoteHref(DOMAIN_KEYS[i] ?? 'web') }),
+      icon: DEFAULT_ICONS[i % DEFAULT_ICONS.length],
     }));
   }
 
@@ -54,7 +57,7 @@ export default async function ServiceDomains({ content: c = {}, settings }: { co
                     <ul className="mt-2 flex-1 list-disc space-y-1 pl-5 marker:text-immo-cyan">{d.deliverables.map((x) => <li key={x}>{x}</li>)}</ul>
                   </>
                 )}
-                {d.cta && <Link href={d.href} className="mt-7 rounded-full bg-immo-cyan px-5 py-3 text-center font-semibold text-immo-dark transition-colors hover:bg-immo-sky">{d.cta}</Link>}
+                <ButtonRow buttons={d.buttons} className="mt-7 flex-col [&>a]:px-5 [&>a]:py-3" />
               </article>
             );
           })}

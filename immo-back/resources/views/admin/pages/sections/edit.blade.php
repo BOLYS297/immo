@@ -76,21 +76,12 @@
                     <div class="tab-pane fade {{ $loop->first ? 'show active' : '' }}" id="content-{{ $locale }}" role="tabpanel">
                         @foreach($block['fields'] as $key => $field)
                             @if($field['type'] === 'repeater')
-                                @php($items = old("content.$locale.$key", $saved[$key] ?? []))
-                                <fieldset class="mb-4" data-repeater data-max="{{ $field['max'] ?? 12 }}">
-                                    <legend class="form-label text-white small fw-semibold mb-2">{{ $field['label'] }}</legend>
-                                    <div data-repeater-items>
-                                        @foreach(array_values(is_array($items) ? $items : []) as $index => $item)
-                                            @include('admin.pages.sections._repeater-item', ['index' => $index, 'item' => $item])
-                                        @endforeach
-                                    </div>
-                                    <template data-repeater-template>
-                                        @include('admin.pages.sections._repeater-item', ['index' => '__INDEX__', 'item' => []])
-                                    </template>
-                                    <button type="button" class="btn btn-sm btn-outline-info" data-repeater-add>
-                                        <i class="bi bi-plus-lg me-1"></i>Ajouter : {{ Str::lower($field['item_label']) }}
-                                    </button>
-                                </fieldset>
+                                @include('admin.pages.sections._repeater', [
+                                    'name' => "content[$locale][$key]",
+                                    'id' => "content_{$locale}_{$key}",
+                                    'items' => old("content.$locale.$key", $saved[$key] ?? []),
+                                    'depth' => 0,
+                                ])
                             @else
                                 <div class="mb-3">
                                     @include('admin.pages.sections._field', [
@@ -219,42 +210,46 @@
             // Ajout, suppression et déplacement d'éléments d'une liste
             form.addEventListener('click', (e) => { if (e.target.closest('[data-repeater-add], [data-repeater-remove], [data-repeater-up], [data-repeater-down], [data-media-clear]')) schedule(); });
         })();
-        // Listes répétables : ajout (depuis le <template>), suppression et réordonnancement.
+        // Listes répétables, éventuellement imbriquées (boutons d'une carte) : ajout depuis le <template> de la
+        // liste, suppression et réordonnancement. Chaque niveau a son marqueur d'index (data-placeholder).
         // L'ordre du DOM est l'ordre enregistré : le serveur réindexe les éléments.
-        document.querySelectorAll('[data-repeater]').forEach((repeater) => {
-            const items = repeater.querySelector('[data-repeater-items]');
-            const template = repeater.querySelector('[data-repeater-template]');
-            const add = repeater.querySelector('[data-repeater-add]');
-            const max = Number(repeater.dataset.max);
-            let next = items.children.length;
-
-            const refresh = () => {
-                [...items.children].forEach((item, i) => {
-                    item.querySelector('[data-repeater-number]').textContent = i + 1;
-                    item.querySelector('[data-repeater-up]').disabled = i === 0;
-                    item.querySelector('[data-repeater-down]').disabled = i === items.children.length - 1;
+        (() => {
+            let next = 0;
+            const own = (repeater, selector) => repeater.querySelector(`:scope > ${selector}`);
+            const refresh = (repeater) => {
+                const items = [...own(repeater, '[data-repeater-items]').children];
+                items.forEach((item, i) => {
+                    const head = item.firstElementChild;
+                    head.querySelector('[data-repeater-number]').textContent = i + 1;
+                    head.querySelector('[data-repeater-up]').disabled = i === 0;
+                    head.querySelector('[data-repeater-down]').disabled = i === items.length - 1;
                 });
-                add.disabled = items.children.length >= max;
+                own(repeater, '[data-repeater-add]').disabled = items.length >= Number(repeater.dataset.max);
             };
 
-            add.addEventListener('click', () => {
-                const html = template.innerHTML.replaceAll('__INDEX__', 'n' + next++);
-                items.insertAdjacentHTML('beforeend', html);
-                refresh();
-                items.lastElementChild.querySelector('input, textarea')?.focus();
-            });
-
-            items.addEventListener('click', (event) => {
-                const item = event.target.closest('[data-repeater-item]');
+            document.addEventListener('click', (event) => {
+                const add = event.target.closest('[data-repeater-add]');
+                if (add) {
+                    const repeater = add.closest('[data-repeater]');
+                    const items = own(repeater, '[data-repeater-items]');
+                    const html = own(repeater, '[data-repeater-template]').innerHTML.replaceAll(repeater.dataset.placeholder, 'n' + next++);
+                    items.insertAdjacentHTML('beforeend', html);
+                    items.lastElementChild.querySelectorAll('[data-repeater]').forEach(refresh);
+                    refresh(repeater);
+                    items.lastElementChild.querySelector('input:not([type=hidden]), textarea, select')?.focus();
+                    return;
+                }
+                const control = event.target.closest('[data-repeater-remove], [data-repeater-up], [data-repeater-down]');
+                const item = control?.closest('[data-repeater-item]');
                 if (!item) return;
-                if (event.target.closest('[data-repeater-remove]')) item.remove();
-                else if (event.target.closest('[data-repeater-up]')) item.previousElementSibling?.before(item);
-                else if (event.target.closest('[data-repeater-down]')) item.nextElementSibling?.after(item);
-                else return;
-                refresh();
+                const repeater = item.parentElement.closest('[data-repeater]');
+                if (control.matches('[data-repeater-remove]')) item.remove();
+                else if (control.matches('[data-repeater-up]')) item.previousElementSibling?.before(item);
+                else item.nextElementSibling?.after(item);
+                refresh(repeater);
             });
 
-            refresh();
-        });
+            document.querySelectorAll('[data-repeater]').forEach(refresh);
+        })();
     </script>
 @endpush
