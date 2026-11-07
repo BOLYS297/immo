@@ -65,7 +65,7 @@ class SectionTranslationsTest extends TestCase
         $items = $this->publishedItems('en');
         $this->assertCount(3, $items);
         $this->assertSame(['Audit (EN)', 'Diagnostic complet'], [$items[0]['title'], $items[0]['text']]);
-        $this->assertSame([['label' => 'Book', 'href' => '/contact']], $items[0]['buttons'], 'lien repris du bouton français de même rang');
+        $this->assertEquals([['label' => 'Book', 'href' => '/contact']], $items[0]['buttons'], 'lien repris du bouton français de même rang');
         $this->assertSame(['Formation', 'Ateliers sur site'], [$items[1]['title'], $items[1]['text']]);
         $this->assertSame(['Support', 'Support 24/7'], [$items[2]['title'], $items[2]['text']]);
     }
