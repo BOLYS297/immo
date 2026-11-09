@@ -14,8 +14,14 @@ export const pageTag = (slug: string) => `page:${slug}`;
 /** Administration Laravel (même hôte que l'API). */
 export const cmsAdminUrl = () => (BASE ? `${new URL(BASE).origin}/admin` : null);
 
-/** IP du visiteur, transmise à Laravel pour limiter les envois par personne et non par serveur Next. */
-export const clientIp = (req: Request) => req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || req.headers.get('x-real-ip') || '';
+/**
+ * IP du visiteur, pour les limites de tentatives (ici et dans Laravel, transmise en X-Client-Ip).
+ * nginx (deploy/nginx/immo.conf) remplace X-Real-IP par l'adresse de connexion : c'est la seule valeur fiable.
+ * Dans X-Forwarded-For, nginx ajoute cette adresse à la FIN de la liste reçue du visiteur : les premières valeurs
+ * sont choisies par le visiteur (une nouvelle à chaque requête contournerait les limites), seule la dernière compte.
+ */
+export const clientIp = (req: Request) =>
+  req.headers.get('x-real-ip')?.trim() || req.headers.get('x-forwarded-for')?.split(',').pop()?.trim() || '';
 
 /**
  * Appel authentifié par CMS_API_KEY : formulaires du site (devis, rendez-vous) et portail client
