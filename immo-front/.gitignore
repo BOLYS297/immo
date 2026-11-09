@@ -1,7 +1,10 @@
 node_modules
 .next
 next-env.d.ts
-.env*.local
+# Variables d'environnement (secrets) : seul le modèle .env.example est versionné, le dépôt est public.
+.env
+.env.*
+!.env.example
 
 .data
 

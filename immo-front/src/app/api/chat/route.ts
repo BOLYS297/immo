@@ -1,6 +1,7 @@
 import { SYSTEM_PROMPT, localReply } from '@/lib/immo-agent';
 import { dictionaries } from '@/lib/dictionaries';
 import { getLocale } from '@/lib/locale';
+import { clientIp } from '@/server/cms-api';
 
 export const runtime = 'nodejs';
 
@@ -39,7 +40,7 @@ const textResponse = (text: string, status = 200) =>
 export async function POST(req: Request) {
   const locale = getLocale();
   const t = dictionaries[locale];
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'local';
+  const ip = clientIp(req) || 'local';
   if (limited(ip)) return textResponse(t.api.rateLimited, 429);
   const messages = parseMessages(await req.json().catch(() => null));
   if (!messages) return textResponse(t.api.chatInvalid, 400);
