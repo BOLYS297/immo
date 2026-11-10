@@ -83,19 +83,9 @@ export const en: Dict = {
   notFound: { title: 'Page not found', text: 'This page doesn’t exist or has been moved.', back: 'Back to home' },
   legal: { formNote: 'Your details are only used to handle your request. Learn more:', privacyLink: 'privacy policy' },
   error: { title: 'Something went wrong', text: 'We couldn’t display this page. Please try again in a moment.', retry: 'Try again' },
-  api: { diagnosticInvalid: 'Enter your company’s name or website.', chatInvalid: 'Invalid request.', rateLimited: 'Too many questions in a short time. Try again in a few minutes or write to us from the Contact page.' },
+  api: { diagnosticInvalid: 'Enter your company’s name or website.', chatInvalid: 'Invalid request.' },
   agent: {
     quick: ['How can I automate my business processes?', 'What architecture for my mobile app?', 'What are your average delivery times?'],
-    offTopic: 'I’m IMMO, IMMO Digital’s dedicated agent. My role is solely to support you with the digitalisation and digital transformation of your business. How can I help with your Web, AI, Design or Infrastructure projects?',
-    next: 'Would you like to book a 30-minute scoping session with our lead partner?',
-    local: {
-      automation: 'We start from your repetitive tasks (data entry, follow-ups, invoicing, customer tracking) and connect them in n8n workflows, with an AI agent handling recurring requests.\n\n- Audit of your workflows\n- n8n workflows and CRM/email integrations\n- A conversational agent connected to your data',
-      app: 'For a mobile app, we favour a Next.js PWA or a React Native app depending on your offline needs and device access requirements.\n\n- Figma mockups and design system\n- Scalable API and PostgreSQL/Supabase database\n- Secure, scalable deployment',
-      delay: 'Timelines depend on scope: they are set after scoping, step by step (audit, architecture, engineering, deployment). We don’t promise a date before understanding your needs.',
-      price: 'We don’t display fixed prices: each project is scoped individually, then quoted in detail.',
-      meeting: 'You can book a 30-minute session from the Contact page: choose your need, your timeline, then a slot with the partner of the relevant team.',
-      about: 'IMMO Digital brings together complementary partners: AI & Data, Fullstack, Art Direction & UI/UX, Infra & Security. No subcontracting: you speak directly with the people building your project.',
-    },
   },
   report: {
     axes: [

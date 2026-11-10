@@ -4,8 +4,14 @@ import Image from 'next/image';
 import { Loader2, SendHorizontal } from 'lucide-react';
 import { useI18n } from '@/components/I18nProvider';
 import type { BlockContent } from '@/lib/blocks';
+import ChatMarkdown from './ChatMarkdown';
 
-type Msg = { role: 'user' | 'assistant'; content: string };
+/** `error` : message d'erreur renvoyé par l'agent ({"detail"}), affiché tel quel. */
+type Msg = { role: 'user' | 'assistant'; content: string; error?: boolean };
+
+// Conversation de l'onglet : l'agent IMMO garde l'historique côté serveur, retrouvé par son identifiant.
+const STORE = 'immo-chat';
+const MAX_LENGTH = 2000;
 
 export default function IMMOTerminal({ content }: { content?: BlockContent<'terminal'> }) {
   const { t } = useI18n();
@@ -13,7 +19,22 @@ export default function IMMOTerminal({ content }: { content?: BlockContent<'term
   const [messages, setMessages] = useState<Msg[]>([{ role: 'assistant', content: tt.greeting }]);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
+  const conversationId = useRef<string | null>(null);
   const scroller = useRef<HTMLDivElement>(null);
+
+  // Reprise de la conversation après un rechargement de la page (même onglet).
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(sessionStorage.getItem(STORE) ?? 'null') as { id?: string; messages?: Msg[] } | null;
+      if (saved?.id && Array.isArray(saved.messages) && saved.messages.length > 1) {
+        conversationId.current = saved.id;
+        setMessages(saved.messages);
+      }
+    } catch { /* stockage indisponible : nouvelle conversation */ }
+  }, []);
+  const remember = (list: Msg[]) => {
+    try { if (conversationId.current) sessionStorage.setItem(STORE, JSON.stringify({ id: conversationId.current, messages: list })); } catch { /* ignoré */ }
+  };
 
   // La salutation suit la langue tant que la conversation n'a pas commencé
   useEffect(() => { setMessages((m) => (m.length === 1 ? [{ role: 'assistant', content: tt.greeting }] : m)); }, [tt.greeting]);
@@ -27,16 +48,31 @@ export default function IMMOTerminal({ content }: { content?: BlockContent<'term
     return () => window.removeEventListener('immo:ask', onAsk);
   }, []);
 
+  /**
+   * Envoie la question à /api/chat (relais vers l'agent IMMO) avec l'identifiant de conversation reçu dans
+   * l'en-tête X-Conversation-Id de la première réponse ; la réponse arrive en texte brut, affichée au fil de l'eau.
+   * Erreur (409 réponse en cours, 422, 429, 503…) : corps JSON {"detail"}, affiché au visiteur.
+   */
   async function send(text: string) {
-    const question = text.trim();
+    const question = text.trim().slice(0, MAX_LENGTH);
     if (!question || busy) return;
     const history: Msg[] = [...messages, { role: 'user', content: question }];
     setMessages([...history, { role: 'assistant', content: '' }]);
     setInput('');
     setBusy(true);
+    let final: Msg[] = history;
     try {
-      const res = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: history }) });
-      if (!res.body) throw new Error('chat');
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: question, conversation_id: conversationId.current }),
+      });
+      if (!res.ok || !res.body) {
+        const detail = ((await res.json().catch(() => null)) as { detail?: unknown } | null)?.detail;
+        final = [...history, { role: 'assistant', content: typeof detail === 'string' && detail ? detail : tt.connError, error: true }];
+        return;
+      }
+      conversationId.current = res.headers.get('X-Conversation-Id') || conversationId.current;
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let answer = '';
@@ -46,10 +82,13 @@ export default function IMMOTerminal({ content }: { content?: BlockContent<'term
         answer += decoder.decode(value, { stream: true });
         setMessages([...history, { role: 'assistant', content: answer }]);
       }
-      if (!res.ok && !answer) throw new Error('chat');
+      answer += decoder.decode();
+      final = [...history, answer ? { role: 'assistant', content: answer } : { role: 'assistant', content: tt.connError, error: true }];
     } catch {
-      setMessages([...history, { role: 'assistant', content: tt.connError }]);
+      final = [...history, { role: 'assistant', content: tt.connError, error: true }];
     } finally {
+      setMessages(final);
+      remember(final);
       setBusy(false);
     }
   }
@@ -72,9 +111,13 @@ export default function IMMOTerminal({ content }: { content?: BlockContent<'term
           <div ref={scroller} role="log" aria-live="polite" aria-label={tt.logLabel} className="h-80 space-y-4 overflow-y-auto px-5 py-5">
             {messages.map((m, i) => (
               <div key={i} className={m.role === 'user' ? 'flex justify-end' : 'flex'}>
-                <p className={m.role === 'user' ? 'max-w-[85%] whitespace-pre-wrap rounded-2xl rounded-br-sm bg-immo-cyan px-4 py-2.5 text-immo-dark' : 'max-w-[90%] whitespace-pre-wrap rounded-2xl rounded-bl-sm bg-white/10 px-4 py-2.5'}>
-                  {m.content || <Loader2 size={18} className="animate-spin" aria-label={tt.thinking} />}
-                </p>
+                {m.role === 'user' ? (
+                  <p className="max-w-[85%] whitespace-pre-wrap break-words rounded-2xl rounded-br-sm bg-immo-cyan px-4 py-2.5 text-immo-dark">{m.content}</p>
+                ) : (
+                  <div className={`max-w-[90%] rounded-2xl rounded-bl-sm px-4 py-2.5 ${m.error ? 'border border-amber-300/60 bg-amber-300/10' : 'bg-white/10'}`} {...(m.error && { role: 'alert' })}>
+                    {m.content ? <ChatMarkdown text={m.content} /> : <Loader2 size={18} className="animate-spin" aria-label={tt.thinking} />}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -85,7 +128,7 @@ export default function IMMOTerminal({ content }: { content?: BlockContent<'term
           </div>
           <form onSubmit={(e) => { e.preventDefault(); void send(input); }} className="flex items-center gap-2 border-t border-white/15 p-3">
             <label htmlFor="immo-input" className="sr-only">{tt.label}</label>
-            <input id="immo-input" value={input} onChange={(e) => setInput(e.target.value)} maxLength={600} placeholder={tt.placeholder} className="min-w-0 flex-1 rounded-full bg-white/10 px-5 py-3 text-white placeholder:text-white/70" />
+            <input id="immo-input" value={input} onChange={(e) => setInput(e.target.value)} maxLength={MAX_LENGTH} placeholder={tt.placeholder} className="min-w-0 flex-1 rounded-full bg-white/10 px-5 py-3 text-white placeholder:text-white/70" />
             <button type="submit" disabled={busy || !input.trim()} aria-label={tt.send} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-immo-cyan text-immo-dark transition-colors hover:bg-immo-sky disabled:opacity-50"><SendHorizontal size={18} /></button>
           </form>
         </div>

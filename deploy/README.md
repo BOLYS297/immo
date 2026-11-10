@@ -13,10 +13,14 @@ Production sur le VPS Hostinger `srv2071586` (88.223.95.244), **partagé avec GL
 Internet ─► nginx GLOBUS (80/443, conteneur globus-nginx-1)
               ├─ globus-engineering-sarl.com ─► pile GLOBUS (inchangée)
               └─ *.immodigital.tech  (conf.d/immo.conf) ─► réseau immo_edge
-                                                            ├─ front   (Next.js :3000)
+                                                            ├─ front   (Next.js :3000) ─► immo-agent (:8000)
                                                             └─ back    (FrankenPHP/Laravel :8080)
                                                                  └─ réseau immo_internal ─► mysql 8.4
 ```
+
+- **Agent IMMO** : conteneur `immo-agent`, hors de ce Compose (`/opt/immo-agent`, guide `app/INTEGRATION.md`), relié
+  au réseau `immo_edge`. Seul le serveur Next l'appelle (`/api/chat`, en-tête `X-Immo-Key` = `IMMO_PROXY_SECRET`) ;
+  la clé Claude n'existe que dans `/opt/immo-agent/agent.env`. Le secret de `front.env` doit rester identique au sien.
 
 - Projet Compose **`immo`** séparé (`deploy/docker-compose.yml`) : aucun port publié, mémoire/CPU plafonnés
   (mysql 768 Mo, back 512 Mo, front 512 Mo, scheduler 192 Mo).

@@ -38,7 +38,7 @@ npm run build && npm start   # test de production
 - Icônes PWA (`public/icons/`) générées depuis `symbol-dark.png` (220 px) : fournir le symbole en SVG pour des icônes parfaitement nettes.
 
 ## Variables d'environnement (.env.local)
-ANTHROPIC_API_KEY, IMMO_AGENT_MODEL, N8N_DIAGNOSTIC_WEBHOOK_URL, CMS_API_URL, REVALIDATE_SECRET, CMS_API_KEY, NEXT_PUBLIC_SITE_URL, SESSION_SECRET, SECURE_COOKIES (détail dans `.env.example`).
+IMMO_AGENT_URL, IMMO_PROXY_SECRET, N8N_DIAGNOSTIC_WEBHOOK_URL, CMS_API_URL, REVALIDATE_SECRET, CMS_API_KEY, NEXT_PUBLIC_SITE_URL, SESSION_SECRET, SECURE_COOKIES (détail dans `.env.example`).
 Le cookie de session est `secure` par défaut en production ; `SECURE_COOKIES=false` uniquement pour tester `next start` en HTTP local.
 
 ## Formulaires (devis, rendez-vous)
