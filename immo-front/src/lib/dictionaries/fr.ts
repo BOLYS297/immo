@@ -82,19 +82,9 @@ export const fr = {
   notFound: { title: 'Page introuvable', text: 'Cette page n’existe pas ou a été déplacée.', back: 'Retour à l’accueil' },
   legal: { formNote: 'Vos informations servent uniquement à traiter votre demande. En savoir plus :', privacyLink: 'politique de confidentialité' },
   error: { title: 'Un problème est survenu', text: 'Nous n’avons pas pu afficher cette page. Réessayez dans un instant.', retry: 'Réessayer' },
-  api: { diagnosticInvalid: 'Saisissez le nom ou l’adresse de votre entreprise.', chatInvalid: 'Requête invalide.', rateLimited: 'Trop de questions en peu de temps. Réessayez dans quelques minutes ou écrivez-nous depuis la page Contact.' },
+  api: { diagnosticInvalid: 'Saisissez le nom ou l’adresse de votre entreprise.', chatInvalid: 'Requête invalide.' },
   agent: {
     quick: ['Comment automatiser mes processus d’entreprise ?', 'Quelle architecture pour mon application mobile ?', 'Quels sont vos délais moyens de livraison ?'],
-    offTopic: 'Je suis IMMO, l’agent dédié d’IMMO Digital. Mon rôle est exclusivement de vous accompagner dans la numérisation et la transformation digitale de votre entreprise. Comment puis-je vous aider sur vos projets Web, IA, Design ou Infrastructure ?',
-    next: 'Souhaitez-vous planifier une session de cadrage de 30 minutes avec notre associé référent ?',
-    local: {
-      automation: 'Nous partons de vos tâches répétitives (saisies, relances, facturation, suivi client) et les relions dans des workflows n8n, avec un agent IA métier pour les demandes récurrentes.\n\n- Audit de vos flux de travail\n- Workflows n8n et intégrations CRM/emails\n- Agent conversationnel adossé à vos données',
-      app: 'Pour une application mobile, nous privilégions une PWA Next.js ou une app React Native selon vos usages hors ligne et vos besoins d’accès aux capteurs.\n\n- Maquettes Figma et design system\n- API scalable et base PostgreSQL/Supabase\n- Déploiement sécurisé et évolutif',
-      delay: 'Les délais dépendent du périmètre : ils sont fixés à l’issue du cadrage, étape par étape (audit, architecture, ingénierie, déploiement). Nous ne promettons pas de date avant d’avoir compris votre besoin.',
-      price: 'Nous n’affichons pas de prix fixe : chaque projet fait l’objet d’un cadrage sur mesure, puis d’un devis détaillé.',
-      meeting: 'Vous pouvez réserver une session de 30 minutes depuis la page Contact : choisissez votre besoin, votre échéance, puis un créneau avec l’associé du pôle concerné.',
-      about: 'IMMO Digital réunit des associés complémentaires : IA & Data, Fullstack, Direction Artistique & UI/UX, Infra & Sécurité. Pas de sous-traitance : vous échangez directement avec ceux qui construisent votre projet.',
-    },
   },
   report: {
     axes: [

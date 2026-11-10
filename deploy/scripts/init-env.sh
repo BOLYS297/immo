@@ -106,7 +106,8 @@ ADMIN_ORIGINS=https://$ADMIN_DOMAIN
 MEDIA_HOSTS=
 SESSION_SECRET=$(rand 48)
 SECURE_COOKIES=
-ANTHROPIC_API_KEY=
-IMMO_AGENT_MODEL=claude-sonnet-5-5
 N8N_DIAGNOSTIC_WEBHOOK_URL=
+# Agent IMMO (conteneur immo-agent, réseau immo_edge) : la clé Claude reste dans /opt/immo-agent/agent.env.
+IMMO_AGENT_URL=http://immo-agent:8000
+IMMO_PROXY_SECRET=$(grep -s '^IMMO_PROXY_SECRET=' /opt/immo-agent/agent.env | tail -1 | cut -d= -f2-)
 EOF
